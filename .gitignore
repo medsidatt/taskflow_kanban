@@ -1,0 +1,38 @@
+# Environment variables
+.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+.docker/
+
+# Build artifacts
+target/
+dist/
+build/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Java
+*.class
+*.jar
+*.war
+
+# Database
+*.db
+*.sqlite

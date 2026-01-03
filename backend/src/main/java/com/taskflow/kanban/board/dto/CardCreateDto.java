@@ -1,0 +1,21 @@
+package com.taskflow.kanban.board.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Data
+public class CardCreateDto {
+    @NotBlank(message = "Title is required")
+    private String title;
+    private String description;
+    private Instant dueDate;
+    private Instant startDate;
+    private Integer priority;
+    private Integer position;
+    @NotNull(message = "Column ID is required")
+    private UUID columnId;
+}

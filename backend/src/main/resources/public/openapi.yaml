@@ -1,0 +1,379 @@
+#openapi: 3.0.3
+#info:
+#  title: TaskFlow Kanban API
+#  description: |-
+#    A comprehensive, enterprise-grade REST API for a Trello-like Kanban application.
+#    This API provides endpoints for managing workspaces, boards, columns (lists), cards, labels, and users.
+#    It includes features like JWT authentication, role-based access control, and a structured data model.
+#  version: 1.0.0
+#servers:
+#  - url: /api
+#    description: Local Development Server
+#
+## Global Security Requirement
+#security:
+#  - bearerAuth: []
+#
+#paths:
+#  # --- Authentication ---
+#  /auth/register:
+#    post:
+#      summary: Register a new user
+#      tags: [Authentication]
+#      security: [] # Public endpoint
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema: { $ref: '#/components/schemas/RegisterDto' }
+#      responses:
+#        '201':
+#          description: User registered successfully
+#          content:
+#            application/json:
+#              schema: { $ref: '#/components/schemas/AuthResponseDto' }
+#        '400': { description: Invalid input or user already exists }
+#
+#  /auth/login:
+#    post:
+#      summary: Log in a user
+#      tags: [Authentication]
+#      security: [] # Public endpoint
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema: { $ref: '#/components/schemas/LoginDto' }
+#      responses:
+#        '200':
+#          description: Login successful
+#          content:
+#            application/json:
+#              schema: { $ref: '#/components/schemas/AuthResponseDto' }
+#        '401': { description: Invalid credentials }
+#
+#  # --- Workspaces ---
+#  /workspaces:
+#    get:
+#      summary: Get all workspaces for the current user
+#      tags: [Workspaces]
+#      responses:
+#        '200':
+#          description: A list of workspaces
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items: { $ref: '#/components/schemas/WorkspaceDto' }
+#    post:
+#      summary: Create a new workspace
+#      tags: [Workspaces]
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema: { $ref: '#/components/schemas/WorkspaceCreateDto' }
+#      responses:
+#        '201':
+#          description: Workspace created
+#          content:
+#            application/json:
+#              schema: { $ref: '#/components/schemas/WorkspaceDto' }
+#
+#  /workspaces/{id}:
+#    get:
+#      summary: Get a workspace by ID
+#      tags: [Workspaces]
+#      parameters:
+#        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+#      responses:
+#        '200':
+#          description: The workspace details
+#          content:
+#            application/json:
+#              schema: { $ref: '#/components/schemas/WorkspaceDto' }
+#        '404': { description: Workspace not found }
+#
+#  # --- Boards ---
+#  /boards:
+#    get:
+#      summary: Get all boards within a workspace
+#      tags: [Boards]
+#      parameters:
+#        - { name: workspaceId, in: query, required: true, schema: { type: string, format: uuid } }
+#      responses:
+#        '200':
+#          description: A list of boards
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items: { $ref: '#/components/schemas/BoardDto' }
+#    post:
+#      summary: Create a new board in a workspace
+#      tags: [Boards]
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema: { $ref: '#/components/schemas/BoardCreateDto' }
+#      responses:
+#        '201':
+#          description: Board created
+#          content:
+#            application/json:
+#              schema: { $ref: '#/components/schemas/BoardDto' }
+#
+#  # --- Columns (Lists) ---
+#  /columns:
+#    get:
+#      summary: Get all columns for a board
+#      tags: [Columns]
+#      parameters:
+#        - { name: boardId, in: query, required: true, schema: { type: string, format: uuid } }
+#      responses:
+#        '200':
+#          description: An ordered list of columns
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items: { $ref: '#/components/schemas/ColumnDto' }
+#    post:
+#      summary: Create a new column on a board
+#      tags: [Columns]
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema: { $ref: '#/components/schemas/ColumnCreateDto' }
+#      responses:
+#        '201':
+#          description: Column created
+#          content:
+#            application/json:
+#              schema: { $ref: '#/components/schemas/ColumnDto' }
+#
+#  # --- Cards ---
+#  /cards:
+#    get:
+#      summary: Get all cards in a column
+#      tags: [Cards]
+#      parameters:
+#        - { name: columnId, in: query, required: true, schema: { type: string, format: uuid } }
+#      responses:
+#        '200':
+#          description: An ordered list of cards
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items: { $ref: '#/components/schemas/CardDto' }
+#    post:
+#      summary: Create a new card in a column
+#      tags: [Cards]
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema: { $ref: '#/components/schemas/CardCreateDto' }
+#      responses:
+#        '201':
+#          description: Card created
+#          content:
+#            application/json:
+#              schema: { $ref: '#/components/schemas/CardDto' }
+#
+#  /cards/{id}/move:
+#    put:
+#      summary: Move a card to a new position or column
+#      tags: [Cards]
+#      parameters:
+#        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema: { $ref: '#/components/schemas/CardMoveDto' }
+#      responses:
+#        '204': { description: Card moved successfully }
+#        '400': { description: Invalid position or column }
+#        '404': { description: Card or column not found }
+#
+#  # --- Labels ---
+#  /labels:
+#    get:
+#      summary: Get all labels for a board
+#      tags: [Labels]
+#      parameters:
+#        - { name: boardId, in: query, required: true, schema: { type: string, format: uuid } }
+#      responses:
+#        '200':
+#          description: A list of labels
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items: { $ref: '#/components/schemas/LabelDto' }
+#    post:
+#      summary: Create a new label on a board
+#      tags: [Labels]
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema: { $ref: '#/components/schemas/LabelCreateDto' }
+#      responses:
+#        '201':
+#          description: Label created
+#          content:
+#            application/json:
+#              schema: { $ref: '#/components/schemas/LabelDto' }
+#
+#  /labels/cards/{cardId}/labels/{labelId}:
+#    post:
+#      summary: Add a label to a card
+#      tags: [Labels]
+#      parameters:
+#        - { name: cardId, in: path, required: true, schema: { type: string, format: uuid } }
+#        - { name: labelId, in: path, required: true, schema: { type: string, format: uuid } }
+#      responses:
+#        '200': { description: Label added successfully }
+#    delete:
+#      summary: Remove a label from a card
+#      tags: [Labels]
+#      parameters:
+#        - { name: cardId, in: path, required: true, schema: { type: string, format: uuid } }
+#        - { name: labelId, in: path, required: true, schema: { type: string, format: uuid } }
+#      responses:
+#        '200': { description: Label removed successfully }
+#
+#components:
+#  securitySchemes:
+#    bearerAuth:
+#      type: http
+#      scheme: bearer
+#      bearerFormat: JWT
+#
+#  schemas:
+#    # --- Auth Schemas ---
+#    RegisterDto:
+#      type: object
+#      properties:
+#        username: { type: string, example: newuser }
+#        email: { type: string, format: email, example: newuser@example.com }
+#        password: { type: string, format: password, example: password123 }
+#    LoginDto:
+#      type: object
+#      properties:
+#        login: { type: string, description: "Can be username or email.", example: user@example.com }
+#        password: { type: string, format: password, example: password }
+#    AuthResponseDto:
+#      type: object
+#      properties:
+#        accessToken: { type: string }
+#        refreshToken: { type: string }
+#        user: { $ref: '#/components/schemas/UserResponseDto' }
+#    UserResponseDto:
+#      type: object
+#      properties:
+#        id: { type: string, format: uuid }
+#        username: { type: string }
+#        email: { type: string, format: email }
+#        roles:
+#          type: array
+#          items: { type: string, example: ROLE_USER }
+#
+#    # --- Workspace Schemas ---
+#    WorkspaceDto:
+#      type: object
+#      properties:
+#        id: { type: string, format: uuid }
+#        name: { type: string }
+#        description: { type: string }
+#        isPrivate: { type: boolean }
+#    WorkspaceCreateDto:
+#      type: object
+#      properties:
+#        name: { type: string, example: "New Project" }
+#        description: { type: string, example: "Project description" }
+#        isPrivate: { type: boolean, default: false }
+#
+#    # --- Board Schemas ---
+#    BoardDto:
+#      type: object
+#      properties:
+#        id: { type: string, format: uuid }
+#        name: { type: string }
+#        description: { type: string }
+#        archived: { type: boolean }
+#        isPrivate: { type: boolean }
+#        workspaceId: { type: string, format: uuid }
+#        position: { type: integer }
+#    BoardCreateDto:
+#      type: object
+#      properties:
+#        name: { type: string, example: "Q3 Roadmap" }
+#        description: { type: string }
+#        isPrivate: { type: boolean, default: false }
+#        workspaceId: { type: string, format: uuid }
+#
+#    # --- Column Schemas ---
+#    ColumnDto:
+#      type: object
+#      properties:
+#        id: { type: string, format: uuid }
+#        name: { type: string }
+#        position: { type: integer }
+#        wipLimit: { type: integer }
+#        archived: { type: boolean }
+#        boardId: { type: string, format: uuid }
+#    ColumnCreateDto:
+#      type: object
+#      properties:
+#        name: { type: string, example: "To Do" }
+#        wipLimit: { type: integer, nullable: true }
+#        boardId: { type: string, format: uuid }
+#
+#    # --- Card Schemas ---
+#    CardDto:
+#      type: object
+#      properties:
+#        id: { type: string, format: uuid }
+#        title: { type: string }
+#        description: { type: string, nullable: true }
+#        position: { type: integer }
+#        archived: { type: boolean }
+#        dueDate: { type: string, format: date-time, nullable: true }
+#        startDate: { type: string, format: date-time, nullable: true }
+#        priority: { type: integer, nullable: true }
+#        columnId: { type: string, format: uuid }
+#        assigneeIds:
+#          type: array
+#          items: { type: string, format: uuid }
+#    CardCreateDto:
+#      type: object
+#      properties:
+#        title: { type: string, example: "Implement login page" }
+#        description: { type: string, nullable: true }
+#        columnId: { type: string, format: uuid }
+#    CardMoveDto:
+#      type: object
+#      properties:
+#        targetColumnId: { type: string, format: uuid }
+#        newPosition: { type: integer }
+#
+#    # --- Label Schemas ---
+#    LabelDto:
+#      type: object
+#      properties:
+#        id: { type: string, format: uuid }
+#        name: { type: string }
+#        color: { type: string, example: "#ff0000" }
+#        boardId: { type: string, format: uuid }
+#    LabelCreateDto:
+#      type: object
+#      properties:
+#        name: { type: string, example: "Bug" }
+#        color: { type: string, example: "#ff0000" }
+#        boardId: { type: string, format: uuid }

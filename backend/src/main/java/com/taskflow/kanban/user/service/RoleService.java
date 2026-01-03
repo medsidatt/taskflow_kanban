@@ -1,0 +1,14 @@
+package com.taskflow.kanban.user.service;
+
+import com.taskflow.kanban.user.dto.RoleDto;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface RoleService {
+    List<RoleDto> getAllRoles();
+    RoleDto getRoleById(UUID id);
+    RoleDto createRole(RoleDto roleDto);
+    RoleDto updateRole(UUID id, RoleDto roleDto);
+    void deleteRole(UUID id);
+}

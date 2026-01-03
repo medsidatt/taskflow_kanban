@@ -1,0 +1,44 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+LICENSE
+CONTRIBUTING.md
+ARCHITECTURE.md
+QUICKSTART.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.example
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose*.yml
+Dockerfile
+.docker/
+
+# Other
+Makefile
+qodana.yaml
