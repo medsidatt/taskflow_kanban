@@ -1,0 +1,44 @@
+<div class="workspace-layout">
+  <!-- Workspace sidebar: Boards, Members, Settings -->
+  <aside class="workspace-sidebar">
+    <div class="workspace-sidebar-header">
+      @if (loading()) {
+        <div class="workspace-name-skeleton"></div>
+      } @else if (displayWorkspace()) {
+        <div class="workspace-avatar">{{ displayWorkspace()!.name.charAt(0).toUpperCase() || 'W' }}</div>
+        <h2 class="workspace-name">{{ displayWorkspace()!.name }}</h2>
+      } @else {
+        <span class="workspace-name-fallback">Workspace</span>
+      }
+    </div>
+
+    <nav class="workspace-nav">
+      <a
+        [routerLink]="['.']"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="workspace-nav-item">
+        <lucide-icon [name]="icons.LayoutGrid" [size]="18" />
+        <span>Boards</span>
+      </a>
+      <a
+        [routerLink]="['members']"
+        routerLinkActive="active"
+        class="workspace-nav-item">
+        <lucide-icon [name]="icons.Users" [size]="18" />
+        <span>Members</span>
+      </a>
+      <a
+        [routerLink]="['settings']"
+        routerLinkActive="active"
+        class="workspace-nav-item">
+        <lucide-icon [name]="icons.Settings" [size]="18" />
+        <span>Settings</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="workspace-content">
+    <router-outlet />
+  </div>
+</div>

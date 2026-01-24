@@ -1,0 +1,264 @@
+<div class="board-list-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Boards</h1>
+      <p class="page-subtitle">{{ viewAllBoards() ? 'All workspaces' : (currentWorkspace()?.name ?? 'No workspace selected') }}</p>
+    </div>
+
+    <div class="header-right">
+      <!-- Search -->
+      <div class="search-box">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search boards..."
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)" />
+      </div>
+
+      <!-- View Toggle -->
+      <div class="view-toggle">
+        <button
+          class="view-toggle-btn"
+          [class.active]="viewMode() === 'grid'"
+          (click)="setViewMode('grid')"
+          title="Grid view">
+          <lucide-icon [name]="icons.Grid" [size]="18" />
+        </button>
+        <button
+          class="view-toggle-btn"
+          [class.active]="viewMode() === 'list'"
+          (click)="setViewMode('list')"
+          title="List view">
+          <lucide-icon [name]="icons.ListIcon" [size]="18" />
+        </button>
+      </div>
+
+      <!-- Create Button (only when a workspace is selected, not in "All Boards" view) -->
+      @if (currentWorkspace() && !viewAllBoards()) {
+        <button class="btn-primary" (click)="createBoard()">
+          <lucide-icon [name]="icons.Plus" [size]="18" />
+          <span>Create Board</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading State (boards or workspace) -->
+  @if (loading() || workspaceLoading()) {
+    <div class="boards-loading">
+      @if (viewMode() === 'grid') {
+        <div class="boards-grid">
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="skeleton skeleton-card"></div>
+          }
+        </div>
+      } @else {
+        <div class="boards-list-view">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="skeleton" style="height: 80px;"></div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Boards Content -->
+  @if (!loading() && !workspaceLoading()) {
+    @if (!viewAllBoards() && !currentWorkspace()) {
+      <!-- No workspace: create or select one -->
+      <app-empty-state
+        icon="Briefcase"
+        [title]="workspaces().length === 0 ? 'Create a workspace' : 'No workspace selected'"
+        [description]="workspaces().length === 0 ? 'Create a workspace first to add boards.' : 'Select a workspace in the sidebar or choose All Boards to see tasks from every workspace.'"
+        actionLabel="Go to Workspaces"
+        (action)="goToWorkspaces()" />
+    } @else if (filteredBoards().length === 0 && archivedBoards().length === 0) {
+      <!-- Empty State -->
+      <app-empty-state
+        icon="LayoutDashboard"
+        title="No boards found"
+        [description]="searchQuery() ? 'Try adjusting your search' : 'Create your first board to get started'"
+        [actionLabel]="searchQuery() ? '' : 'Create Board'"
+        (action)="createBoard()" />
+    } @else {
+      <div class="boards-content">
+        <!-- Favorite Boards & All Boards (only when there are active boards) -->
+        @if (filteredBoards().length > 0) {
+        <!-- Favorite Boards -->
+        @if (favoriteBoards().length > 0 && !searchQuery()) {
+          <section class="boards-section">
+            <div class="section-header">
+              <lucide-icon [name]="icons.Star" [size]="20" class="section-icon section-icon-star" />
+              <h2 class="section-title">Favorites</h2>
+            </div>
+            <p class="section-hint">Click the star on a board to add or remove it from favorites.</p>
+
+            <div [class]="viewMode() === 'grid' ? 'boards-grid' : 'boards-list-view'">
+              @for (board of favoriteBoards(); track board.id) {
+                <div
+                  class="board-card"
+                  [class.board-card-list]="viewMode() === 'list'"
+                  (click)="openBoard(board.id)">
+                  <div class="board-card-header">
+                    <div class="board-card-bg" [style.background]="(board.backgroundColor || board.background_color) || 'linear-gradient(135deg, #2196f3, #1976d2)'"></div>
+                    <div class="board-card-actions" (click)="$event.stopPropagation()">
+                      <button class="board-action-btn star-active" (click)="toggleFavorite(board.id, $event)" title="Remove from favorites">
+                        <lucide-icon [name]="icons.Star" [size]="14" />
+                      </button>
+                      <button class="board-action-btn" (click)="editBoard(board, $event)" title="Edit">
+                        <lucide-icon [name]="icons.Edit2" [size]="14" />
+                      </button>
+                      <button class="board-action-btn" (click)="archiveBoard(board, $event)" title="Archive">
+                        <lucide-icon [name]="icons.Archive" [size]="14" />
+                      </button>
+                      <button class="board-action-btn danger" (click)="deleteBoard(board, $event)" title="Delete">
+                        <lucide-icon [name]="icons.Trash2" [size]="14" />
+                      </button>
+                    </div>
+                  </div>
+                  <div class="board-card-content">
+                    <h3 class="board-card-title">{{ board.name }}</h3>
+                    @if (board.description) {
+                      <p class="board-card-description">{{ board.description }}</p>
+                    }
+                    @if (board.workspaceName) {
+                      <span class="board-card-workspace">{{ board.workspaceName }}</span>
+                    }
+                    @if (board.isPrivate) {
+                      <span class="badge badge-warning">Private</span>
+                    }
+                  </div>
+                  <div class="board-card-footer">
+                    <div class="board-card-members">
+                      @for (m of (board.members || []).slice(0, 3); track m.userId) {
+                        <app-user-avatar [name]="m.username || m.email || 'User'" size="sm" />
+                      }
+                    </div>
+                    @if (board.updatedAt) {
+                      <span class="board-card-time">{{ board.updatedAt | date:'short' }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- All Boards -->
+        <section class="boards-section">
+          <div class="section-header">
+            <lucide-icon [name]="icons.Grid" [size]="20" class="section-icon" />
+            <h2 class="section-title">
+              @if (searchQuery()) {
+                Search Results ({{ filteredBoards().length }})
+              } @else {
+                All Boards
+              }
+            </h2>
+          </div>
+
+          <div [class]="viewMode() === 'grid' ? 'boards-grid' : 'boards-list-view'">
+            @for (board of filteredBoards(); track board.id) {
+              <div
+                class="board-card"
+                [class.board-card-list]="viewMode() === 'list'"
+                (click)="openBoard(board.id)">
+                <div class="board-card-header">
+                  <div class="board-card-bg" [style.background]="(board.backgroundColor || board.background_color) || 'linear-gradient(135deg, #64b5f6, #42a5f5)'"></div>
+                  <div class="board-card-actions" (click)="$event.stopPropagation()">
+                    <button
+                      class="board-action-btn"
+                      [class.star-active]="isFavorite(board.id)"
+                      (click)="toggleFavorite(board.id, $event)"
+                      [title]="isFavorite(board.id) ? 'Remove from favorites' : 'Add to favorites'">
+                      <lucide-icon [name]="icons.Star" [size]="14" />
+                    </button>
+                    <button class="board-action-btn" (click)="editBoard(board, $event)" title="Edit">
+                      <lucide-icon [name]="icons.Edit2" [size]="14" />
+                    </button>
+                    <button class="board-action-btn" (click)="archiveBoard(board, $event)" title="Archive">
+                      <lucide-icon [name]="icons.Archive" [size]="14" />
+                    </button>
+                    <button class="board-action-btn danger" (click)="deleteBoard(board, $event)" title="Delete">
+                      <lucide-icon [name]="icons.Trash2" [size]="14" />
+                    </button>
+                  </div>
+                </div>
+                <div class="board-card-content">
+                  <h3 class="board-card-title">{{ board.name }}</h3>
+                  @if (board.description) {
+                    <p class="board-card-description">{{ board.description }}</p>
+                  }
+                  @if (board.workspaceName) {
+                    <span class="board-card-workspace">{{ board.workspaceName }}</span>
+                  }
+                  @if (board.isPrivate) {
+                    <span class="badge badge-warning">Private</span>
+                  }
+                </div>
+                <div class="board-card-footer">
+                  <div class="board-card-members">
+                    @for (m of (board.members || []).slice(0, 3); track m.userId) {
+                      <app-user-avatar [name]="m.username || m.email || 'User'" size="sm" />
+                    }
+                  </div>
+                  @if (board.updatedAt) {
+                    <span class="board-card-time">{{ board.updatedAt | date:'short' }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+        }
+
+        <!-- Archived Boards -->
+        @if (archivedBoards().length > 0 && !searchQuery()) {
+          <section class="boards-section">
+            <div class="section-header">
+              <lucide-icon [name]="icons.Archive" [size]="20" class="section-icon" />
+              <h2 class="section-title">Archived ({{ archivedBoards().length }})</h2>
+            </div>
+            <div [class]="viewMode() === 'grid' ? 'boards-grid' : 'boards-list-view'">
+              @for (board of archivedBoards(); track board.id) {
+                <div
+                  class="board-card board-card-archived"
+                  [class.board-card-list]="viewMode() === 'list'"
+                  (click)="openBoard(board.id)">
+                  <div class="board-card-header">
+                    <div class="board-card-bg" [style.background]="(board.backgroundColor || board.background_color) || 'linear-gradient(135deg, #9e9e9e, #757575)'"></div>
+                    <div class="board-card-actions" (click)="$event.stopPropagation()">
+                      <button class="board-action-btn" (click)="restoreBoard(board, $event)" title="Restore">
+                        <lucide-icon [name]="icons.ArchiveRestore" [size]="14" />
+                      </button>
+                      <button class="board-action-btn danger" (click)="deleteBoard(board, $event)" title="Delete">
+                        <lucide-icon [name]="icons.Trash2" [size]="14" />
+                      </button>
+                    </div>
+                  </div>
+                  <div class="board-card-content">
+                    <h3 class="board-card-title">{{ board.name }}</h3>
+                    @if (board.workspaceName) {
+                      <span class="board-card-workspace">{{ board.workspaceName }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    }
+  }
+</div>
+
+<!-- Create Board Modal -->
+<app-create-board-modal
+  (boardCreated)="onBoardCreated($event)"
+  (closed)="createBoardModal.onClose()">
+</app-create-board-modal>
+
+<!-- Edit Board Modal -->
+<app-edit-board-modal (saved)="onBoardUpdated($event)"></app-edit-board-modal>

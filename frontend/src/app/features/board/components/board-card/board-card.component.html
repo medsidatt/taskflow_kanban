@@ -1,0 +1,92 @@
+<article 
+  class="card" 
+  [class.priority-high]="priorityClass === 'priority-high'" 
+  [class.priority-medium]="priorityClass === 'priority-medium'"
+  [class.priority-low]="priorityClass === 'priority-low'">
+  
+  <!-- Labels -->
+  @if (hasLabels) {
+    <div class="card-labels">
+      @for (label of card.labels; track label.id || label.name) {
+        <span 
+          class="label-pill"
+          [style.--label-bg]="label.color"
+          [title]="label.name">
+          {{ label.name }}
+        </span>
+      }
+    </div>
+  }
+
+  <!-- Title -->
+  <h3 class="card-title">{{ card.title }}</h3>
+
+  <!-- Description -->
+  @if (card.description) {
+    <p class="card-description">{{ card.description | truncate:80 }}</p>
+  }
+
+  <!-- Metadata -->
+  <div class="card-meta">
+    @if (hasDueDate) {
+      <span 
+        class="meta-badge due-date" 
+        [class.due-soon]="isDueSoon"
+        [class.overdue]="isOverdue"
+        [title]="card.dueDate">
+        <lucide-icon [name]="icons.Calendar" [size]="12" />
+        <span>{{ card.dueDate | relativeTime }}</span>
+      </span>
+    }
+    @if (card.priority) {
+      <span class="meta-badge priority" [attr.data-priority]="priorityClass">
+        <span class="priority-dot" [class]="priorityClass"></span>
+        <span>{{ priorityLabel }}</span>
+      </span>
+    }
+  </div>
+
+  <!-- Footer: attachments, comments, members -->
+  @if (hasAttachments || hasComments || hasMembers) {
+    <footer class="card-footer">
+      <div class="footer-stats">
+        @if (hasAttachments) {
+          <span class="stat" title="Attachments">
+            <lucide-icon [name]="icons.Paperclip" [size]="12" />
+            <span class="stat-count">{{ card.attachmentCount }}</span>
+          </span>
+        }
+        @if (hasComments) {
+          <span class="stat" title="Comments">
+            <lucide-icon [name]="icons.MessageSquare" [size]="12" />
+            <span class="stat-count">{{ card.commentCount }}</span>
+          </span>
+        }
+      </div>
+      @if (hasMembers) {
+        <div class="member-stack">
+          @for (member of card.members?.slice(0, 3); track member.userId) {
+            <span 
+              class="member-avatar" 
+              [title]="member.username || member.email">
+              {{ (member.username || member.email || 'U')[0].toUpperCase() }}
+            </span>
+          }
+          @if (card.members && card.members.length > 3) {
+            <span class="member-more">+{{ card.members.length - 3 }}</span>
+          }
+        </div>
+      }
+    </footer>
+  }
+
+  <!-- Quick actions (hover) -->
+  <div class="card-actions">
+    <button type="button" class="action-btn" (click)="onQuickEdit($event)" title="Quick edit" aria-label="Quick edit">
+      <lucide-icon [name]="icons.Pencil" [size]="14" />
+    </button>
+    <button type="button" class="action-btn action-delete" (click)="onDelete($event)" title="Delete" aria-label="Delete card">
+      <lucide-icon [name]="icons.Trash2" [size]="14" />
+    </button>
+  </div>
+</article>

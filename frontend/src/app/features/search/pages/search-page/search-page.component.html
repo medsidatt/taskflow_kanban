@@ -1,0 +1,125 @@
+<div class="search-page">
+  <div class="search-page-header">
+    <h1 class="search-page-title">Search</h1>
+    @if (query()) {
+      <p class="search-page-subtitle">Results for "{{ query() }}"</p>
+    }
+  </div>
+
+  @if (!query()) {
+    <app-empty-state
+      icon="Search"
+      title="Search cards, boards, columns, workspaces"
+      description="Use the search bar above to find boards, columns, workspaces, and cards."
+      actionLabel="" />
+  } @else if (loading()) {
+    <div class="search-loading">
+      <div class="search-skeleton"></div>
+      <div class="search-skeleton"></div>
+      <div class="search-skeleton"></div>
+    </div>
+  } @else {
+    @let r = result();
+    @if (r && hasAnyResults(r)) {
+      <div class="search-groups">
+        @if (r.workspaces && r.workspaces.length > 0) {
+          <section class="search-group">
+            <h2 class="search-group-title">
+              <lucide-icon [name]="icons.Briefcase" [size]="18" />
+              <span>Workspaces</span>
+              <span class="search-group-count">({{ r.workspaces.length }})</span>
+            </h2>
+            <ul class="search-list">
+              @for (w of r.workspaces; track w.id) {
+                <li class="search-item" (click)="goToWorkspace(w)">
+                  <span class="search-item-icon search-item-icon-ws">{{ w.name.charAt(0).toUpperCase() }}</span>
+                  <div class="search-item-body">
+                    <span class="search-item-title">{{ w.name }}</span>
+                    @if (w.description) {
+                      <span class="search-item-meta">{{ w.description }}</span>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (r.boards && r.boards.length > 0) {
+          <section class="search-group">
+            <h2 class="search-group-title">
+              <lucide-icon [name]="icons.LayoutDashboard" [size]="18" />
+              <span>Boards</span>
+              <span class="search-group-count">({{ r.boards.length }})</span>
+            </h2>
+            <ul class="search-list">
+              @for (b of r.boards; track b.id) {
+                <li class="search-item" (click)="goToBoard(b)">
+                  <span class="search-item-icon search-item-icon-board">
+                    <lucide-icon [name]="icons.LayoutDashboard" [size]="16" />
+                  </span>
+                  <div class="search-item-body">
+                    <span class="search-item-title">{{ b.name }}</span>
+                    <span class="search-item-meta">{{ b.workspaceName }}</span>
+                  </div>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (r.columns && r.columns.length > 0) {
+          <section class="search-group">
+            <h2 class="search-group-title">
+              <lucide-icon [name]="icons.LayoutList" [size]="18" />
+              <span>Columns</span>
+              <span class="search-group-count">({{ r.columns.length }})</span>
+            </h2>
+            <ul class="search-list">
+              @for (c of r.columns; track c.id) {
+                <li class="search-item" (click)="goToColumn(c)">
+                  <span class="search-item-icon search-item-icon-col">
+                    <lucide-icon [name]="icons.LayoutList" [size]="16" />
+                  </span>
+                  <div class="search-item-body">
+                    <span class="search-item-title">{{ c.name }}</span>
+                    <span class="search-item-meta">{{ c.boardName }} · {{ c.workspaceName }}</span>
+                  </div>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
+        @if (r.cards && r.cards.length > 0) {
+          <section class="search-group">
+            <h2 class="search-group-title">
+              <lucide-icon [name]="icons.CreditCard" [size]="18" />
+              <span>Cards</span>
+              <span class="search-group-count">({{ r.cards.length }})</span>
+            </h2>
+            <ul class="search-list">
+              @for (c of r.cards; track c.id) {
+                <li class="search-item" (click)="goToCard(c)">
+                  <span class="search-item-icon search-item-icon-card">
+                    <lucide-icon [name]="icons.CreditCard" [size]="16" />
+                  </span>
+                  <div class="search-item-body">
+                    <span class="search-item-title">{{ c.title }}</span>
+                    <span class="search-item-meta">{{ c.columnName }} · {{ c.boardName }} · {{ c.workspaceName }}</span>
+                  </div>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      </div>
+    } @else {
+      <app-empty-state
+        icon="Search"
+        title="No results found"
+        [description]="'No boards, columns, workspaces, or cards match \'' + query() + '\''"
+        actionLabel="" />
+    }
+  }
+</div>

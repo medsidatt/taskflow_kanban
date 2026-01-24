@@ -1,0 +1,274 @@
+/* ========== Board Card — Premium Design ========== */
+
+.card {
+  --card-radius: 10px;
+  --card-padding: 14px;
+  --card-bg: #ffffff;
+  --card-border: 1px solid var(--border-color, #e4e4e7);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --card-accent: transparent;
+
+  position: relative;
+  background: var(--card-bg);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: 
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s ease;
+  border-left: 3px solid var(--card-accent);
+}
+
+.card:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.card:hover .card-actions {
+  opacity: 1;
+}
+
+/* Priority accent */
+.card.priority-high {
+  --card-accent: var(--error-500, #ef4444);
+}
+
+.card.priority-medium {
+  --card-accent: var(--warning-500, #f59e0b);
+}
+
+.card.priority-low {
+  --card-accent: var(--info-500, #06b6d4);
+}
+
+/* ----- Labels ----- */
+.card-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.label-pill {
+  --label-bg: #94a3b8;
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  background: var(--label-bg);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+}
+
+/* ----- Title ----- */
+.card-title {
+  margin: 0 0 8px 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary, #18181b);
+  line-height: 1.35;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+/* ----- Description ----- */
+.card-description {
+  margin: 0 0 10px 0;
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #52525b);
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+/* ----- Metadata ----- */
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-secondary, #52525b);
+  background: var(--gray-100, #f4f4f5);
+}
+
+.meta-badge.due-date {
+  color: var(--text-secondary);
+}
+
+.meta-badge.due-date.due-soon {
+  background: var(--warning-50, #fffbeb);
+  color: var(--warning-700, #d97706);
+}
+
+.meta-badge.due-date.overdue {
+  background: var(--error-50, #fef2f2);
+  color: var(--error-700, #dc2626);
+}
+
+.meta-badge.priority .priority-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.priority-dot.priority-high {
+  background: var(--error-500, #ef4444);
+}
+
+.priority-dot.priority-medium {
+  background: var(--warning-500, #f59e0b);
+}
+
+.priority-dot.priority-low {
+  background: var(--info-500, #06b6d4);
+}
+
+/* ----- Footer ----- */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color-light, #f4f4f5);
+}
+
+.footer-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-tertiary, #a1a1aa);
+  font-size: 0.75rem;
+}
+
+.stat-count {
+  font-weight: 600;
+  color: var(--text-secondary, #52525b);
+}
+
+/* Member avatars */
+.member-stack {
+  display: flex;
+  align-items: center;
+}
+
+.member-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  margin-left: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary-500, #3b82f6), var(--primary-600, #2563eb));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.member-avatar:first-child {
+  margin-left: 0;
+}
+
+.member-more {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  margin-left: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-secondary, #52525b);
+  background: var(--gray-200, #e4e4e7);
+}
+
+/* ----- Quick actions ----- */
+.card-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.action-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--text-secondary, #52525b);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.action-btn:hover {
+  background: #fff;
+  color: var(--text-primary, #18181b);
+  transform: scale(1.08);
+}
+
+.action-btn.action-delete:hover {
+  background: var(--error-500, #ef4444);
+  color: #fff;
+}
+
+/* ----- Drag preview ----- */
+.cdk-drag-preview .card {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  transform: rotate(1.5deg);
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+  .card {
+    --card-padding: 12px;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+  }
+
+  .card-description {
+    font-size: 0.8rem;
+  }
+
+  .member-avatar,
+  .member-more {
+    width: 22px;
+    height: 22px;
+    font-size: 0.6rem;
+  }
+}

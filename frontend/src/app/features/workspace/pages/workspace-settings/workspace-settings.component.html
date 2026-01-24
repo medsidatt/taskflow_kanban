@@ -1,0 +1,108 @@
+<div class="workspace-settings-page">
+  <div class="settings-header">
+    <h1 class="settings-title">Settings</h1>
+    <p class="settings-subtitle">{{ workspaceName() }}</p>
+  </div>
+
+  @if (loading()) {
+    <div class="settings-loading">Loading...</div>
+  } @else if (!workspace()) {
+    <div class="settings-error">
+      <p>Workspace not found</p>
+    </div>
+  } @else {
+    <!-- General -->
+    <section class="settings-section">
+      <h2 class="section-title">General</h2>
+      @if (!canEdit()) {
+        <p class="section-hint">Only admins and owners can edit these settings.</p>
+      }
+      <div class="form-group">
+        <label class="form-label" for="ws-name">Name</label>
+        <input
+          id="ws-name"
+          type="text"
+          class="form-input"
+          [value]="formName()"
+          (input)="formName.set($any($event.target).value)"
+          placeholder="Workspace name"
+          [readonly]="!canEdit()" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ws-desc">Description</label>
+        <textarea
+          id="ws-desc"
+          class="form-textarea"
+          [value]="formDescription()"
+          (input)="formDescription.set($any($event.target).value)"
+          placeholder="Short description (optional)"
+          rows="3"
+          [readonly]="!canEdit()"></textarea>
+      </div>
+      <div class="form-group">
+        <span class="form-label">Visibility</span>
+        <div class="visibility-options">
+          <label class="visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              [checked]="!formIsPrivate()"
+              (change)="formIsPrivate.set(false)"
+              [disabled]="!canEdit()" />
+            <span>
+              <lucide-icon [name]="icons.Unlock" [size]="16" />
+              Public – anyone in the workspace can see it
+            </span>
+          </label>
+          <label class="visibility-option">
+            <input
+              type="radio"
+              name="visibility"
+              [checked]="formIsPrivate()"
+              (change)="formIsPrivate.set(true)"
+              [disabled]="!canEdit()" />
+            <span>
+              <lucide-icon [name]="icons.Lock" [size]="16" />
+              Private – only invited members can access
+            </span>
+          </label>
+        </div>
+      </div>
+      @if (canEdit()) {
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="save()"
+          [disabled]="saving()">
+          {{ saving() ? 'Saving...' : 'Save changes' }}
+        </button>
+      }
+    </section>
+
+    <!-- Danger zone -->
+    <section class="settings-section danger-zone">
+      <h2 class="section-title">
+        <lucide-icon [name]="icons.AlertTriangle" [size]="20" />
+        Danger zone
+      </h2>
+      <div class="danger-block">
+        <div>
+          <strong>Delete this workspace</strong>
+          <p class="danger-desc">Permanently delete the workspace and all its boards, lists, and cards. This cannot be undone.</p>
+        </div>
+        @if (isOwner()) {
+          <button
+            type="button"
+            class="btn-danger"
+            (click)="deleteWorkspace()"
+            [disabled]="deleting()">
+            <lucide-icon [name]="icons.Trash2" [size]="16" />
+            {{ deleting() ? 'Deleting...' : 'Delete workspace' }}
+          </button>
+        } @else {
+          <span class="danger-hint">Only the workspace owner can delete it.</span>
+        }
+      </div>
+    </section>
+  }
+</div>

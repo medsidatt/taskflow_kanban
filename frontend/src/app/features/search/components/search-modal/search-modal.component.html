@@ -1,0 +1,136 @@
+@if (isOpen()) {
+  <div
+    class="search-modal-backdrop"
+    (click)="onBackdropClick()"
+    (keydown)="onKeydown($event)"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Search">
+    <div class="search-modal-panel" (click)="onPanelClick($event)">
+      <!-- Header: search input + close -->
+      <div class="search-modal-header">
+        <lucide-icon [name]="icons.Search" [size]="20" class="search-modal-icon" />
+        <input
+          #searchInput
+          type="text"
+          class="search-modal-input"
+          placeholder="Search cards, boards, columns, workspaces..."
+          [value]="inputValue()"
+          (input)="onQueryInput($any($event.target).value)"
+          (keydown)="onKeydown($event)" />
+        <button type="button" class="search-modal-close" (click)="close()" aria-label="Close">
+          <lucide-icon [name]="icons.X" [size]="20" />
+        </button>
+      </div>
+
+      <!-- Body: results, loading, or empty -->
+      <div class="search-modal-body">
+        @if (!query()) {
+          <p class="search-modal-hint">Start typing to search</p>
+        } @else if (loading()) {
+          <div class="search-modal-loading">
+            <div class="search-modal-skeleton"></div>
+            <div class="search-modal-skeleton"></div>
+            <div class="search-modal-skeleton"></div>
+          </div>
+        } @else {
+          @let r = result();
+          @if (r && hasAnyResults(r)) {
+            <div class="search-modal-groups">
+              @if (r.workspaces && r.workspaces.length > 0) {
+                <section class="search-modal-group">
+                  <h3 class="search-modal-group-title">
+                    <lucide-icon [name]="icons.Briefcase" [size]="16" />
+                    <span>Workspaces</span>
+                    <span class="search-modal-group-count">({{ r.workspaces.length }})</span>
+                  </h3>
+                  <ul class="search-modal-list">
+                    @for (w of r.workspaces; track w.id) {
+                      <li class="search-modal-item" (click)="goToWorkspace(w)">
+                        <span class="search-modal-item-icon search-modal-item-ws">{{ w.name.charAt(0).toUpperCase() }}</span>
+                        <div class="search-modal-item-body">
+                          <span class="search-modal-item-title">{{ w.name }}</span>
+                          @if (w.description) {
+                            <span class="search-modal-item-meta">{{ w.description }}</span>
+                          }
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                </section>
+              }
+              @if (r.boards && r.boards.length > 0) {
+                <section class="search-modal-group">
+                  <h3 class="search-modal-group-title">
+                    <lucide-icon [name]="icons.LayoutDashboard" [size]="16" />
+                    <span>Boards</span>
+                    <span class="search-modal-group-count">({{ r.boards.length }})</span>
+                  </h3>
+                  <ul class="search-modal-list">
+                    @for (b of r.boards; track b.id) {
+                      <li class="search-modal-item" (click)="goToBoard(b)">
+                        <span class="search-modal-item-icon search-modal-item-board">
+                          <lucide-icon [name]="icons.LayoutDashboard" [size]="14" />
+                        </span>
+                        <div class="search-modal-item-body">
+                          <span class="search-modal-item-title">{{ b.name }}</span>
+                          <span class="search-modal-item-meta">{{ b.workspaceName }}</span>
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                </section>
+              }
+              @if (r.columns && r.columns.length > 0) {
+                <section class="search-modal-group">
+                  <h3 class="search-modal-group-title">
+                    <lucide-icon [name]="icons.LayoutList" [size]="16" />
+                    <span>Columns</span>
+                    <span class="search-modal-group-count">({{ r.columns.length }})</span>
+                  </h3>
+                  <ul class="search-modal-list">
+                    @for (c of r.columns; track c.id) {
+                      <li class="search-modal-item" (click)="goToColumn(c)">
+                        <span class="search-modal-item-icon search-modal-item-col">
+                          <lucide-icon [name]="icons.LayoutList" [size]="14" />
+                        </span>
+                        <div class="search-modal-item-body">
+                          <span class="search-modal-item-title">{{ c.name }}</span>
+                          <span class="search-modal-item-meta">{{ c.boardName }} · {{ c.workspaceName }}</span>
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                </section>
+              }
+              @if (r.cards && r.cards.length > 0) {
+                <section class="search-modal-group">
+                  <h3 class="search-modal-group-title">
+                    <lucide-icon [name]="icons.CreditCard" [size]="16" />
+                    <span>Cards</span>
+                    <span class="search-modal-group-count">({{ r.cards.length }})</span>
+                  </h3>
+                  <ul class="search-modal-list">
+                    @for (c of r.cards; track c.id) {
+                      <li class="search-modal-item" (click)="goToCard(c)">
+                        <span class="search-modal-item-icon search-modal-item-card">
+                          <lucide-icon [name]="icons.CreditCard" [size]="14" />
+                        </span>
+                        <div class="search-modal-item-body">
+                          <span class="search-modal-item-title">{{ c.title }}</span>
+                          <span class="search-modal-item-meta">{{ c.columnName }} · {{ c.boardName }} · {{ c.workspaceName }}</span>
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                </section>
+              }
+            </div>
+          } @else {
+            <p class="search-modal-no-results">No results for "{{ query() }}"</p>
+          }
+        }
+      </div>
+    </div>
+  </div>
+}
