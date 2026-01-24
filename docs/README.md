@@ -14,6 +14,7 @@ All project documentation lives in this `docs/` folder.
 | Purpose | Document |
 |--------|----------|
 | **Start here** | [QUICK_START_TEST.md](QUICK_START_TEST.md) |
+| **Reference** | [REFERENCE.md](REFERENCE.md) — config, API, testing, CI/CD |
 | **Doc index (workspace boards & real-time)** | [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) |
 | **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | **Quick setup** | [QUICK_SETUP_GUIDE.md](QUICK_SETUP_GUIDE.md), [QUICKSTART.md](QUICKSTART.md) |
@@ -83,6 +84,7 @@ All project documentation lives in this `docs/` folder.
 | [QUICK_NPE_FIX](QUICK_NPE_FIX.md) | Quick NPE fix |
 | [QUICK_REFERENCE](QUICK_REFERENCE.md) | Quick reference |
 | [QUICK_REFERENCE_BOARDS_REALTIME](QUICK_REFERENCE_BOARDS_REALTIME.md) | Boards real-time quick ref |
+| [REFERENCE](REFERENCE.md) | **Reference** — config, API, testing, CI/CD |
 | [QUICK_SETUP_GUIDE](QUICK_SETUP_GUIDE.md) | Quick setup guide |
 | [QUICK_START](QUICK_START.md) | Quick start |
 | [QUICK_START_TEST](QUICK_START_TEST.md) | Quick start test |

@@ -311,9 +311,11 @@ taskflow-kanban/
 All project documentation is in the **[`docs/`](docs/)** folder:
 
 - **[docs/README.md](docs/README.md)** — Index of all docs, quick links, and backend/frontend guides
+- **[docs/REFERENCE.md](docs/REFERENCE.md)** — **Reference** — config, API, testing, CI/CD, useful commands
+- **[docs/TESTING-GUIDE.md](docs/TESTING-GUIDE.md)** — Unit, integration, and manual testing; troubleshooting
 - **Backend** — [docs/backend/](docs/backend/) (README, CONCEPTION, HELP)
 - **Frontend** — [docs/frontend/](docs/frontend/) (README, FRONTEND-SETUP)
-- **Guides** — Quick start, setup, testing, architecture, implementation notes, and more
+- **Guides** — Quick start, setup, architecture, implementation notes, and more
 
 ## 🎯 Best Practices Implemented
 
@@ -368,18 +370,22 @@ All project documentation is in the **[`docs/`](docs/)** folder:
 
 ```bash
 cd backend
-mvn test                    # Run all tests
-mvn test -Dtest=ClassName   # Run specific test class
-mvn verify                  # Run integration tests
+./mvnw clean test           # Run all tests (uses H2, Flyway disabled)
+./mvnw test -Dtest=ClassName   # Run specific test class
+./mvnw verify               # Run integration tests
 ```
 
 ### Frontend Tests
 
 ```bash
 cd frontend
-npm test                    # Run unit tests
-npm run test:coverage       # Generate coverage report
+npm test                    # Run unit tests (interactive)
+npm test -- --watch=false --browsers=ChromeHeadless   # CI-friendly
+npm run test:coverage       # Generate coverage report (if configured)
 ```
+
+- **Full guide**: [docs/TESTING-GUIDE.md](docs/TESTING-GUIDE.md)
+- **Reference**: [docs/REFERENCE.md](docs/REFERENCE.md#testing)
 
 ## 🤝 Contributing
 

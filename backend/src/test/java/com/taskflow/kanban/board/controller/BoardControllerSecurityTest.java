@@ -8,8 +8,11 @@ import com.taskflow.kanban.board.dto.ColumnCreateDto;
 import com.taskflow.kanban.board.dto.LabelCreateDto;
 import com.taskflow.kanban.board.entity.Board;
 import com.taskflow.kanban.board.entity.BoardColumn;
+import com.taskflow.kanban.board.entity.BoardMember;
+import com.taskflow.kanban.board.entity.BoardRole;
 import com.taskflow.kanban.board.entity.Card;
 import com.taskflow.kanban.board.entity.Label;
+import com.taskflow.kanban.board.repository.BoardMemberRepository;
 import com.taskflow.kanban.board.repository.BoardRepository;
 import com.taskflow.kanban.board.repository.CardRepository;
 import com.taskflow.kanban.board.repository.ColumnRepository;
@@ -21,6 +24,9 @@ import com.taskflow.kanban.user.entity.User;
 import com.taskflow.kanban.user.repository.RoleRepository;
 import com.taskflow.kanban.user.repository.UserRepository;
 import com.taskflow.kanban.workspace.entity.Workspace;
+import com.taskflow.kanban.workspace.entity.WorkspaceMember;
+import com.taskflow.kanban.workspace.entity.WorkspaceRole;
+import com.taskflow.kanban.workspace.repository.WorkspaceMemberRepository;
 import com.taskflow.kanban.workspace.repository.WorkspaceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +65,13 @@ class BoardControllerSecurityTest {
     private WorkspaceRepository workspaceRepository;
 
     @Autowired
+    private WorkspaceMemberRepository workspaceMemberRepository;
+
+    @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private BoardMemberRepository boardMemberRepository;
 
     @Autowired
     private ColumnRepository columnRepository;
@@ -103,9 +115,19 @@ class BoardControllerSecurityTest {
                 .isPrivate(false)
                 .build();
         workspace = workspaceRepository.save(workspace);
+        workspaceMemberRepository.save(WorkspaceMember.builder()
+                .workspace(workspace)
+                .user(user)
+                .role(WorkspaceRole.OWNER)
+                .build());
 
         board = Board.builder().name("Test Board").workspace(workspace).build();
         board = boardRepository.save(board);
+        boardMemberRepository.save(BoardMember.builder()
+                .board(board)
+                .user(user)
+                .role(BoardRole.OWNER)
+                .build());
     }
 
     @Test

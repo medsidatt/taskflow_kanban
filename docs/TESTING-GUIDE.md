@@ -1,24 +1,113 @@
-# TaskFlow Kanban - Testing Guide
+# TaskFlow Kanban — Testing Guide
 
-Complete guide to testing all features of the TaskFlow Kanban application.
+Complete guide to **unit**, **integration**, and **manual** testing for the TaskFlow Kanban application.
 
-## 🚀 Quick Start
+---
 
-### 1. Start Backend
+## Table of Contents
+
+- [Unit & Integration Tests](#unit--integration-tests)
+- [Test Configuration](#test-configuration)
+- [CI/CD Testing](#cicd-testing)
+- [Manual Testing](#manual-testing)
+- [Troubleshooting](#troubleshooting)
+
+---
+
+## Unit & Integration Tests
+
+### Backend (Maven + JUnit)
+
 ```bash
 cd backend
-mvn spring-boot:run
+./mvnw clean test
 ```
 
-Backend will be available at: `http://localhost:8080/api`
+- **Profile**: `test` (H2 in-memory, Flyway disabled)
+- **Reports**: `backend/target/surefire-reports/`
+- **Coverage**: Surefire XML plus any custom report config
+
+**Test types:**
+
+| Type | Location | Examples |
+|------|----------|----------|
+| Unit | `*ServiceTest.java` | `AuthServiceTest`, `UserServiceTest` |
+| Controller / Security | `*ControllerSecurityTest.java` | `BoardControllerSecurityTest`, `WorkspaceControllerSecurityTest` |
+
+### Frontend (Karma + Jasmine)
+
+```bash
+cd frontend
+npm test -- --watch=false --browsers=ChromeHeadless
+```
+
+- **Config**: `angular.json` → Karma section
+- **Specs**: `*.spec.ts` (e.g. `app.component.spec.ts`)
+- **CI**: use `--watch=false --browsers=ChromeHeadless`; optional `--code-coverage`
+
+### Running All Tests
+
+```bash
+# Backend
+cd backend && ./mvnw clean test
+
+# Frontend
+cd frontend && npm test -- --watch=false --browsers=ChromeHeadless
+```
+
+---
+
+## Test Configuration
+
+### Backend (`application-test.properties`)
+
+- **Database**: H2 in-memory (`jdbc:h2:mem:testdb`)
+- **Flyway**: **disabled** (`spring.flyway.enabled=false`) — migrations use PostgreSQL-specific SQL
+- **Schema**: Hibernate `ddl-auto=create-drop`
+- **Initial data**: `src/test/resources/data.sql` — inserts USER and ADMIN roles
+- **JWT**: Test secret and expiration in `application-test.properties`
+
+### Security / Integration Tests
+
+- **Workspace** update/delete: the authenticated user must be a **workspace member** (e.g. OWNER). Tests create a `WorkspaceMember` for the test user.
+- **Board** operations (e.g. create column, create card): the user must be both a **workspace member** and a **board member** (e.g. OWNER). Tests create `WorkspaceMember` and `BoardMember` in `@BeforeEach`.
+- **Auth**: Invalid login throws `UnauthorizedException` (not `IllegalArgumentException`). See `AuthServiceTest.login_invalidCredentials`.
+
+### Reference
+
+- [REFERENCE.md](REFERENCE.md) — test commands, config summary, troubleshooting
+
+---
+
+## CI/CD Testing
+
+- **Backend CI/CD** (`.github/workflows/backend-ci.yml`): runs on `backend/**` changes; `./mvnw clean verify`, then Docker build/push on `main`.
+- **Frontend CI/CD** (`.github/workflows/frontend-ci.yml`): runs on `frontend/**` changes; `npm ci`, build, `npm test -- --watch=false --browsers=ChromeHeadless`.
+- **Full Stack Tests** (`.github/workflows/full-test.yml`): runs backend and frontend tests in parallel on push/PR to `main` or manual trigger.
+
+See [REFERENCE.md](REFERENCE.md#cicd) for workflows and secrets.
+
+---
+
+## Manual Testing
+
+### 1. Start Backend
+
+```bash
+cd backend
+./mvnw spring-boot:run
+```
+
+Backend: `http://localhost:8080/api`
 
 ### 2. Start Frontend
+
 ```bash
 cd frontend
 npm start
 ```
 
-Frontend will be available at: `http://localhost:4200`
+Frontend: `http://localhost:4200`
 
 ## 🧪 Testing Authentication
 
@@ -455,36 +544,29 @@ curl -X POST http://localhost:8080/api/boards \
 - [ ] Focus indicators visible
 - [ ] Form labels present
 
-## 🐛 Common Issues & Solutions
+## Troubleshooting
 
-### Issue: Backend won't start
-**Solution:** Check PostgreSQL is running
-```bash
-docker-compose up postgres
-```
+### Unit / Integration Tests
 
-### Issue: CORS errors
-**Solution:** Check backend CORS configuration allows `localhost:4200`
+| Issue | Solution |
+|-------|----------|
+| **Flyway / PostgreSQL SQL errors** in backend tests | Use `spring.flyway.enabled=false` in `application-test.properties`. Tests use H2 + Hibernate `create-drop` + `data.sql`. |
+| **403 in workspace/board security tests** | Ensure test user is **workspace member** and **board member** (e.g. OWNER). See `WorkspaceControllerSecurityTest`, `BoardControllerSecurityTest`. |
+| **Wrong exception in `AuthServiceTest.login_invalidCredentials`** | Expect `UnauthorizedException` (not `IllegalArgumentException`) for invalid login. |
+| **Frontend specs fail on title / router** | Use `title === 'TaskFlow Kanban'`; mock `ThemeService` and `provideRouter([])`; assert on `router-outlet`, `app-loading-spinner`, `app-toast`. |
+| **H2 / `data.sql` errors** | Ensure `spring.jpa.defer-datasource-initialization=true` and `data.sql` inserts only USER/ADMIN roles. |
 
-### Issue: 401 Unauthorized
-**Solution:** 
-- Check JWT token is being sent
-- Check token hasn't expired
-- Login again
+### Manual / E2E
 
-### Issue: Drag & drop not working
-**Solution:**
-- Check @angular/cdk is installed
-- Check browser console for errors
-- Try refreshing page
+| Issue | Solution |
+|-------|----------|
+| **Backend won't start** | Ensure PostgreSQL is running: `docker-compose up postgres` |
+| **CORS errors** | Backend CORS must allow `localhost:4200` |
+| **401 Unauthorized** | Check JWT is sent, not expired; log in again |
+| **Drag & drop not working** | Verify `@angular/cdk`; check console; refresh |
+| **Styles not loading** | `rm -rf frontend/.angular/cache` then `npm start` |
 
-### Issue: Styles not loading
-**Solution:**
-```bash
-# Clear Angular cache
-rm -rf .angular/cache
-ng serve
-```
+See [REFERENCE.md](REFERENCE.md#testing) for commands and config.
 
 ## 📈 Performance Testing
 
@@ -597,4 +679,5 @@ A successful test means:
 
 **Happy Testing! 🚀**
 
-For issues or questions, refer to the main [README.md](README.md)
+- **Reference**: [REFERENCE.md](REFERENCE.md) — commands, config, API, CI/CD  
+- **Project overview**: [README.md](../README.md)
