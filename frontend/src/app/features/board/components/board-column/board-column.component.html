@@ -1,0 +1,64 @@
+<div class="column-container">
+  <!-- Column Header -->
+  <div class="column-header" [style.border-left-color]="getColumnColor()">
+    <div class="column-title-section">
+      <h3 class="column-title">{{ column.name }}</h3>
+      <span class="card-count">{{ cards.length }}</span>
+    </div>
+    <div class="column-actions">
+      <button class="column-menu-btn" title="Column menu">⋮</button>
+    </div>
+  </div>
+
+  <!-- Cards List -->
+  <div 
+    class="cards-list"
+    cdkDropList
+    [id]="columnId"
+    [cdkDropListData]="cards"
+    [cdkDropListConnectedTo]="connectedLists"
+    (cdkDropListDropped)="onDrop($event)">
+    
+    <app-board-card
+      *ngFor="let card of cards"
+      [card]="card"
+      (click)="onCardClick(card)"
+      (cardUpdated)="onCardUpdate($event)"
+      (cardDeleted)="onCardDelete($event)"
+      cdkDrag>
+    </app-board-card>
+
+    <!-- Empty State -->
+    <div class="empty-column" *ngIf="cards.length === 0 && !isAddingCard">
+      <p>No cards yet</p>
+    </div>
+  </div>
+
+  <!-- Add Card Section -->
+  <div class="add-card-section">
+    <div class="add-card-form" *ngIf="isAddingCard">
+      <textarea
+        [(ngModel)]="newCardTitle"
+        placeholder="Enter card title..."
+        class="card-input"
+        rows="3"
+        (keydown.enter)="addCard()"
+        (keydown.escape)="cancelAddCard()"
+        autofocus>
+      </textarea>
+      <div class="add-card-actions">
+        <button class="btn btn-primary btn-sm" (click)="addCard()" [disabled]="isCreating">
+          {{ isCreating ? 'Adding...' : 'Add Card' }}
+        </button>
+        <button class="btn btn-secondary btn-sm" (click)="cancelAddCard()" [disabled]="isCreating">Cancel</button>
+      </div>
+    </div>
+
+    <button 
+      class="add-card-btn" 
+      *ngIf="!isAddingCard"
+      (click)="startAddCard()">
+      <span class="icon">+</span> Add Card
+    </button>
+  </div>
+</div>

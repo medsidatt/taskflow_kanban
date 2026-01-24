@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.angular/
+.git/
+.gitignore
+*.log
+.vscode/
+.idea/
+*.md
+coverage/
+.nyc_output/
+e2e/
+*.spec.ts
+karma.conf.js

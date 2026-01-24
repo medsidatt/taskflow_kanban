@@ -1,0 +1,315 @@
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="modal modal-card-detail">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-header-content">
+        <lucide-icon [name]="icons.AlignLeft" [size]="24" />
+        <div class="modal-title-section">
+          @if (editingTitle()) {
+            <input
+              type="text"
+              class="modal-title-input"
+              [(ngModel)]="cardTitle"
+              [value]="cardTitle()"
+              (input)="cardTitle.set($any($event.target).value)"
+              (blur)="updateTitle()"
+              (keyup.enter)="updateTitle()"
+              (keyup.escape)="editingTitle.set(false)"
+              autofocus />
+          } @else {
+            <h2 class="modal-title" (click)="editingTitle.set(true)">
+              {{ cardTitle() }}
+            </h2>
+          }
+          <p class="modal-subtitle">in list <span class="list-name">{{ columnTitle }}</span></p>
+        </div>
+      </div>
+      <button class="modal-close-btn" (click)="closeModal()">
+        <lucide-icon [name]="icons.X" [size]="20" />
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <div class="modal-main">
+        <!-- Description Section -->
+        <section class="card-section">
+          <div class="section-header">
+            <lucide-icon [name]="icons.AlignLeft" [size]="20" />
+            <h3 class="section-title">Description</h3>
+          </div>
+          
+          @if (editingDescription()) {
+            <textarea
+              class="description-textarea"
+              rows="6"
+              [(ngModel)]="cardDescription"
+              [value]="cardDescription()"
+              (input)="cardDescription.set($any($event.target).value)"
+              placeholder="Add a more detailed description..."
+              autofocus></textarea>
+            <div class="description-actions">
+              <button class="btn-primary btn-sm" (click)="updateDescription()">
+                Save
+              </button>
+              <button class="btn-ghost btn-sm" (click)="editingDescription.set(false)">
+                Cancel
+              </button>
+            </div>
+          } @else {
+            <div 
+              class="description-content"
+              (click)="editingDescription.set(true)">
+              @if (cardDescription()) {
+                <p>{{ cardDescription() }}</p>
+              } @else {
+                <p class="description-placeholder">Add a more detailed description...</p>
+              }
+            </div>
+          }
+        </section>
+
+        <!-- Activity Section -->
+        <section class="card-section">
+          <div class="section-header">
+            <lucide-icon [name]="icons.Activity" [size]="20" />
+            <h3 class="section-title">Activity</h3>
+          </div>
+
+          <!-- Add Comment -->
+          <div class="comment-form">
+            <app-user-avatar name="Current User" size="sm" />
+            <div class="comment-input-wrapper">
+              <textarea
+                class="comment-textarea"
+                rows="3"
+                placeholder="Write a comment..."
+                [(ngModel)]="newComment"
+                [value]="newComment()"
+                (input)="newComment.set($any($event.target).value)"></textarea>
+              <button 
+                class="btn-primary btn-sm"
+                (click)="addComment()"
+                [disabled]="!newComment().trim()">
+                Comment
+              </button>
+            </div>
+          </div>
+
+          <!-- Comments List -->
+          <div class="comments-list">
+            @for (comment of comments(); track comment.id) {
+              <div class="comment-item">
+                <app-user-avatar [name]="comment.authorUsername" size="sm" />
+                <div class="comment-content">
+                  <div class="comment-header">
+                    <span class="comment-author">{{ comment.authorUsername }}</span>
+                    <span class="comment-time">{{ comment.createdAt | date:'short' }}</span>
+                  </div>
+                  <p class="comment-text">{{ comment.content }}</p>
+                  <div class="comment-actions">
+                    <button class="comment-action-btn" (click)="confirmDeleteComment(comment.id)">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Activity Log -->
+          @if (activities().length > 0) {
+            <div class="activity-log">
+              <h4 class="activity-log-title">Recent Activity</h4>
+              @for (activity of activities(); track activity.id) {
+                <div class="activity-item">
+                  <app-user-avatar 
+                    [name]="activity.performedByUsername || 'User'"
+                    size="sm" />
+                  <div class="activity-content">
+                    <p class="activity-text">
+                      <span class="activity-user">{{ activity.performedByUsername }}</span>
+                      {{ activity.action.toLowerCase() }}
+                      <span class="activity-time">{{ activity.timestamp | date:'short' }}</span>
+                    </p>
+                    @if (activity.details) {
+                      <p class="activity-details">{{ activity.details }}</p>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </section>
+      </div>
+
+      <!-- Modal Sidebar -->
+      <div class="modal-sidebar">
+        <!-- Status -->
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Status</h4>
+          <button
+            type="button"
+            class="sidebar-btn"
+            (click)="updateAchieved(!card.achieved)">
+            <lucide-icon [name]="card.achieved ? icons.CheckCircle : icons.Circle" [size]="16" />
+            <span>{{ card.achieved ? 'Done' : 'Mark as done' }}</span>
+          </button>
+        </div>
+
+        <!-- Due date -->
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Due date</h4>
+          @if (editingDueDate()) {
+            <div class="due-date-edit">
+              <input
+                type="date"
+                class="due-date-input"
+                [value]="cardDueDate()"
+                (input)="cardDueDate.set($any($event.target).value)" />
+              <div class="due-date-edit-actions">
+                <button type="button" class="btn-primary btn-sm" (click)="updateDueDate(cardDueDate() || null)">
+                  Set
+                </button>
+                <button type="button" class="btn-ghost btn-sm" (click)="updateDueDate(null)">Clear</button>
+                <button type="button" class="btn-ghost btn-sm" (click)="editingDueDate.set(false)">Cancel</button>
+              </div>
+            </div>
+          } @else {
+            <button
+              type="button"
+              class="sidebar-btn"
+              (click)="editingDueDate.set(true)">
+              <lucide-icon [name]="icons.Calendar" [size]="16" />
+              <span>{{ card.dueDate ? (card.dueDate | date:'MMM d, y') : 'Set due date' }}</span>
+            </button>
+          }
+        </div>
+
+        <!-- Move -->
+        @if (columns.length > 0) {
+          <div class="sidebar-section">
+            <h4 class="sidebar-title">Move</h4>
+            <select
+              class="move-select"
+              [ngModel]="moveTargetColumnId()"
+              (ngModelChange)="moveTargetColumnId.set($event)">
+              <option value="">Select list...</option>
+              @for (col of columns; track col.id) {
+                @if (col.id !== card.columnId) {
+                  <option [value]="col.id">{{ col.name }}</option>
+                }
+              }
+            </select>
+            <button
+              type="button"
+              class="sidebar-btn"
+              (click)="doMove()"
+              [disabled]="!moveTargetColumnId()">
+              Move
+            </button>
+          </div>
+        }
+
+        <!-- Labels -->
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Labels</h4>
+          @if (card.labels && card.labels.length > 0) {
+            <div class="labels-chips">
+              @for (l of card.labels; track l.id) {
+                <span class="label-chip" [style.background-color]="l.color">
+                  {{ l.name }}
+                  <button type="button" class="label-chip-remove" (click)="removeLabel(l.id)">×</button>
+                </span>
+              }
+            </div>
+          }
+          <button
+            type="button"
+            class="sidebar-btn"
+            (click)="showLabelPicker.set(!showLabelPicker())">
+            <lucide-icon [name]="icons.Tag" [size]="16" />
+            <span>Add label</span>
+          </button>
+          @if (showLabelPicker()) {
+            <div class="label-picker">
+              @for (l of boardLabels(); track l.id) {
+                @if (!hasLabelOnCard(l.id)) {
+                  <button
+                    type="button"
+                    class="label-picker-item"
+                    [style.background-color]="l.color"
+                    [disabled]="addingLabelId() === l.id"
+                    (click)="addLabel(l)">
+                    {{ l.name }}
+                  </button>
+                }
+              }
+              @if (boardLabels().length === 0 || allLabelsOnCard()) {
+                <p class="label-picker-empty">No labels to add</p>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Members -->
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Members</h4>
+          @if (card.members && card.members.length > 0) {
+            <div class="members-list">
+              @for (m of card.members; track m.userId) {
+                <div class="member-row">
+                  <app-user-avatar [name]="m.username || m.email || 'User'" size="sm" />
+                  <span class="member-name">{{ m.username || m.email || 'User' }}</span>
+                  <button type="button" class="member-remove" (click)="removeMember(m.userId)">×</button>
+                </div>
+              }
+            </div>
+          }
+          <button
+            type="button"
+            class="sidebar-btn"
+            (click)="showMemberSearch.set(!showMemberSearch())">
+            <lucide-icon [name]="icons.Users" [size]="16" />
+            <span>Add member</span>
+          </button>
+          @if (showMemberSearch()) {
+            <div class="member-search">
+              <input
+                type="text"
+                class="member-search-input"
+                placeholder="Search users..."
+                [value]="memberSearchQuery()"
+                (input)="memberSearchQuery.set($any($event.target).value)"
+                (keyup.enter)="doMemberSearch()" />
+              <button type="button" class="btn-primary btn-sm" (click)="doMemberSearch()">Search</button>
+              <div class="member-search-results">
+                @for (u of memberSearchResults(); track u.id) {
+                  <button
+                    type="button"
+                    class="member-search-item"
+                    [disabled]="addingMemberId() === u.id"
+                    (click)="addMember(u)">
+                    <app-user-avatar [name]="u.username || u.email || 'User'" size="sm" />
+                    {{ u.username || u.email || u.id }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Actions -->
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Actions</h4>
+          <div class="sidebar-actions">
+            <button type="button" class="sidebar-btn danger" (click)="confirmDeleteCard()">
+              <lucide-icon [name]="icons.Trash2" [size]="16" />
+              <span>Delete card</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

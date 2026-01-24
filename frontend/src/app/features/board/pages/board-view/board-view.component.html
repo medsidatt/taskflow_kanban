@@ -1,0 +1,371 @@
+<div class="board-view">
+  @if (loading()) {
+    <div class="board-loading">
+      <div class="loading-spinner"></div>
+      <p>Loading board...</p>
+    </div>
+  } @else if (!board()) {
+    <div class="board-error">
+      <p>Board not found</p>
+      <button class="btn-secondary" (click)="router.navigate(['/boards'])">
+        Back to Boards
+      </button>
+    </div>
+  } @else {
+    <!-- Board Header -->
+    <div class="board-header" [style.borderTop]="boardColor() ? '3px solid ' + boardColor() : null">
+      <div class="board-header-left">
+        <div class="board-title-row">
+          <h1 class="board-title">{{ boardTitle() }}</h1>
+          @if (board()?.isPrivate) {
+            <span class="board-private-badge" title="Private board">
+              <lucide-icon [name]="icons.Lock" [size]="16" />
+            </span>
+          }
+        </div>
+        @if (board()?.description) {
+          <p class="board-description">{{ board()?.description }}</p>
+        }
+      </div>
+
+      <div class="board-header-right">
+        @if (board()?.archived) {
+          <div class="board-archived-banner">
+            <lucide-icon [name]="icons.Archive" [size]="18" />
+            <span>This board is archived</span>
+            <button type="button" class="btn-ghost btn-sm" (click)="restoreBoard()">
+              <lucide-icon [name]="icons.ArchiveRestore" [size]="16" />
+              Restore
+            </button>
+          </div>
+        } @else {
+          <!-- Board Members -->
+          <div class="board-members">
+            @for (member of (board()?.members || []).slice(0, 5); track member.userId) {
+              <app-user-avatar
+                [name]="member.username || member.email || 'User'"
+                size="sm" />
+            }
+            @if ((board()?.members?.length ?? 0) > 5) {
+              <span class="board-members-more">+{{ (board()?.members?.length ?? 0) - 5 }}</span>
+            }
+            <button class="btn-ghost btn-sm">
+              <lucide-icon [name]="icons.Users" [size]="16" />
+              <span>Share</span>
+            </button>
+          </div>
+
+          <!-- Board Menu -->
+          <div class="board-menu-wrap">
+            <button type="button" class="btn-ghost btn-icon" (click)="columnMenuId.set(null); cardMenuCardId.set(null); boardMenuOpen.set(!boardMenuOpen())">
+              <lucide-icon [name]="icons.MoreVertical" [size]="20" />
+            </button>
+            @if (boardMenuOpen()) {
+              <div class="board-menu-dropdown">
+                <button type="button" class="board-menu-item" (click)="openEditBoard()">
+                  <lucide-icon [name]="icons.Edit2" [size]="16" />
+                  Edit board
+                </button>
+                <button type="button" class="board-menu-item" (click)="archiveBoard()">
+                  <lucide-icon [name]="icons.Archive" [size]="16" />
+                  Archive board
+                </button>
+                <button type="button" class="board-menu-item" (click)="setBoardPrivate(!board()?.isPrivate)">
+                  <lucide-icon [name]="board()?.isPrivate ? icons.Unlock : icons.Lock" [size]="16" />
+                  {{ board()?.isPrivate ? 'Make public' : 'Make private' }}
+                </button>
+                <button type="button" class="board-menu-item" (click)="openArchivedModal()">
+                  <lucide-icon [name]="icons.ArchiveRestore" [size]="16" />
+                  Archived cards
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Board Content - Columns -->
+    <div class="board-content">
+      <div
+        class="board-columns"
+        cdkDropList
+        cdkDropListOrientation="horizontal"
+        [cdkDropListData]="columnsActive()"
+        [cdkDropListSortingDisabled]="board()?.archived ?? false"
+        (cdkDropListDropped)="onColumnDrop($event)">
+
+        <!-- Columns -->
+        @for (column of columnsActive(); track column.id) {
+          <div class="board-column" cdkDrag [cdkDragDisabled]="board()?.archived ?? false" (click)="closeMenus()">
+            <div class="column-drag-placeholder" *cdkDragPlaceholder></div>
+            <!-- Column Header -->
+            <div class="column-header">
+              @if (!board()?.archived) {
+                <span class="column-drag-handle" cdkDragHandle title="Drag to reorder list">
+                  <lucide-icon [name]="icons.GripVertical" [size]="16" />
+                </span>
+              }
+              @if (editingColumnId() === column.id) {
+                <input
+                  type="text"
+                  class="column-title-input"
+                  [value]="column.name"
+                  (blur)="updateColumnTitle(column.id, $any($event.target).value); editingColumnId.set(null)"
+                  (keyup.enter)="updateColumnTitle(column.id, $any($event.target).value); editingColumnId.set(null)"
+                  (keyup.escape)="editingColumnId.set(null)"
+                  autofocus />
+              } @else {
+                <h3
+                  class="column-title"
+                  (click)="editingColumnId.set(column.id)">
+                  {{ column.name }}
+                </h3>
+              }
+
+              <span class="column-count">{{ getCardsForColumn(column.id).length }}</span>
+
+              <!-- Column Menu -->
+              <div class="column-actions">
+                @if (!board()?.archived) {
+                  <button class="btn-icon-sm" (click)="addingCardToColumn.set(column.id)">
+                    <lucide-icon [name]="icons.Plus" [size]="16" />
+                  </button>
+                }
+                <div class="column-more-wrap">
+                  <button class="btn-icon-sm" (click)="toggleColumnMenu(column.id, $event)">
+                    <lucide-icon [name]="icons.MoreVertical" [size]="16" />
+                  </button>
+                  @if (columnMenuId() === column.id) {
+                    <div class="column-menu-dropdown">
+                      <button type="button" class="column-menu-item" (click)="archiveColumn(column.id)">
+                        <lucide-icon [name]="icons.Archive" [size]="14" />
+                        Archive list
+                      </button>
+                      <button type="button" class="column-menu-item danger" (click)="deleteColumn(column.id); columnMenuId.set(null)">
+                        <lucide-icon [name]="icons.Trash2" [size]="14" />
+                        Delete list
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Cards List (id required so cdkDropListConnectedTo can link lists for cross-column drag) -->
+            <div
+              class="column-cards"
+              cdkDropList
+              [id]="'column-' + column.id"
+              [cdkDropListData]="getCardsForColumn(column.id)"
+              [cdkDropListConnectedTo]="getConnectedDropLists()"
+              (cdkDropListDropped)="onCardDrop($event, column.id)">
+
+              @for (card of getCardsForColumn(column.id); track card.id) {
+                <div class="card-item" [class.card-item-achieved]="card.achieved" cdkDrag (click)="openCardDetails(card)">
+                  @if (!board()?.archived) {
+                    <button type="button" class="card-item-menu" (click)="toggleCardMenu(card.id, $event)">
+                      <lucide-icon [name]="icons.MoreVertical" [size]="14" />
+                    </button>
+                    @if (cardMenuCardId() === card.id) {
+                      <div class="card-menu-dropdown">
+                        <button type="button" class="card-menu-item" (click)="toggleCardAchieved(card, $event)">
+                          <lucide-icon [name]="(card.achieved) ? icons.Circle : icons.CheckCircle" [size]="14" />
+                          {{ card.achieved ? 'Mark as not done' : 'Mark as done' }}
+                        </button>
+                        <button type="button" class="card-menu-item" (click)="archiveCard(card, $event)">
+                          <lucide-icon [name]="icons.Archive" [size]="14" />
+                          Archive card
+                        </button>
+                      </div>
+                    }
+                  }
+                  <!-- Labels -->
+                  @if (card.labels && card.labels.length > 0) {
+                    <div class="card-labels">
+                      @for (label of card.labels; track label.id) {
+                        <span
+                          class="card-label"
+                          [style.background-color]="label.color">
+                          {{ label.name }}
+                        </span>
+                      }
+                    </div>
+                  }
+
+                  <!-- Title row: done toggle + title -->
+                  <div class="card-title-row">
+                    @if (!board()?.archived) {
+                      <button type="button" class="card-done-toggle" (click)="toggleCardAchieved(card, $event)" [title]="(card.achieved) ? 'Mark as not done' : 'Mark as done'">
+                        <lucide-icon [name]="(card.achieved) ? icons.CheckCircle : icons.Circle" [size]="18" />
+                      </button>
+                    } @else if (card.achieved) {
+                      <span class="card-done-indicator"><lucide-icon [name]="icons.CheckCircle" [size]="18" /></span>
+                    }
+                    <h4 class="card-title">{{ card.title }}</h4>
+                  </div>
+
+                  <!-- Card Meta -->
+                  <div class="card-meta">
+                    <!-- Due Date -->
+                    @if (card.dueDate) {
+                      <span class="card-badge">
+                        <lucide-icon [name]="icons.Calendar" [size]="12" />
+                        <span>{{ card.dueDate | date:'MMM d' }}</span>
+                      </span>
+                    }
+
+                    <!-- Members -->
+                    @if (card.members && card.members.length > 0) {
+                      <div class="card-members">
+                        @for (member of card.members.slice(0, 3); track member.userId) {
+                          <app-user-avatar
+                            [name]="member.username || member.email || 'User'"
+                            size="sm" />
+                        }
+                        @if (card.members.length > 3) {
+                          <span class="card-member-count">+{{ card.members.length - 3 }}</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Drag Placeholder -->
+              <div class="card-placeholder" *cdkDragPlaceholder></div>
+            </div>
+
+            <!-- Add Card Form -->
+            @if (!board()?.archived && addingCardToColumn() === column.id) {
+              <div class="add-card-form">
+                <textarea
+                  class="add-card-input"
+                  placeholder="Enter card title..."
+                  rows="3"
+                  [(ngModel)]="newCardTitle"
+                  [value]="newCardTitle()"
+                  (input)="newCardTitle.set($any($event.target).value)"
+                  (keyup.enter)="$any($event).ctrlKey && createCard(column.id)"
+                  (keyup.escape)="addingCardToColumn.set(null); newCardTitle.set('')"
+                  autofocus></textarea>
+                <div class="add-card-actions">
+                  <button
+                    class="btn-primary btn-sm"
+                    (click)="createCard(column.id)"
+                    [disabled]="!newCardTitle().trim()">
+                    Add Card
+                  </button>
+                  <button
+                    class="btn-ghost btn-sm"
+                    (click)="addingCardToColumn.set(null); newCardTitle.set('')">
+                    <lucide-icon [name]="icons.X" [size]="16" />
+                  </button>
+                </div>
+              </div>
+            } @else if (!board()?.archived) {
+              <button
+                class="add-card-button"
+                (click)="addingCardToColumn.set(column.id)">
+                <lucide-icon [name]="icons.Plus" [size]="16" />
+                <span>Add a card</span>
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Archived lists -->
+        @if (columnsArchived().length > 0) {
+          <div class="archived-lists-wrap">
+            <button
+              type="button"
+              class="archived-lists-toggle"
+              (click)="showArchivedColumns.set(!showArchivedColumns())">
+              <lucide-icon [name]="icons.Archive" [size]="16" />
+              Archived lists ({{ columnsArchived().length }})
+            </button>
+            @if (showArchivedColumns()) {
+              <div class="archived-lists-list">
+                @for (col of columnsArchived(); track col.id) {
+                  <div class="archived-list-item">
+                    <span>{{ col.name }}</span>
+                    <button type="button" class="btn-ghost btn-sm" (click)="restoreColumn(col)">Restore</button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Add Column -->
+        @if (!board()?.archived && showAddColumn()) {
+          <div class="board-column add-column-form">
+            <input
+              type="text"
+              class="add-column-input"
+              placeholder="Enter column title..."
+              [(ngModel)]="newColumnTitle"
+              [value]="newColumnTitle()"
+              (input)="newColumnTitle.set($any($event.target).value)"
+              (keyup.enter)="createColumn()"
+              (keyup.escape)="showAddColumn.set(false); newColumnTitle.set('')"
+              autofocus />
+            <div class="add-column-actions">
+              <button
+                class="btn-primary btn-sm"
+                (click)="createColumn()"
+                [disabled]="!newColumnTitle().trim()">
+                Add Column
+              </button>
+              <button
+                class="btn-ghost btn-sm"
+                (click)="showAddColumn.set(false); newColumnTitle.set('')">
+                <lucide-icon [name]="icons.X" [size]="16" />
+              </button>
+            </div>
+          </div>
+        } @else if (!board()?.archived) {
+          <button class="add-column-button" (click)="showAddColumn.set(true)">
+            <lucide-icon [name]="icons.Plus" [size]="20" />
+            <span>Add another list</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Archived cards modal -->
+    <app-modal
+      [isOpen]="showArchivedModal()"
+      title="Archived cards"
+      [showFooter]="false"
+      (closed)="showArchivedModal.set(false)">
+      <div class="archived-cards-list">
+        @if (archivedCards().length === 0) {
+          <p class="archived-cards-empty">No archived cards</p>
+        } @else {
+          @for (card of archivedCards(); track card.id) {
+            <div class="archived-card-item">
+              <span class="archived-card-title">{{ card.title }}</span>
+              <button type="button" class="btn-ghost btn-sm" (click)="restoreCard(card)">Restore</button>
+            </div>
+          }
+        }
+      </div>
+    </app-modal>
+
+    <!-- Edit board modal -->
+    <app-edit-board-modal (saved)="onBoardEditSaved($event)"></app-edit-board-modal>
+
+    <!-- Card detail modal -->
+    @if (selectedCard(); as card) {
+      <app-card-detail-modal
+        [card]="card"
+        [columnTitle]="getColumnName(card.columnId)"
+        [columns]="columnsActive()"
+        [boardId]="board()?.id ?? null"
+        (close)="onCardDetailClose()"
+        (update)="onCardDetailUpdate($event)"
+        (deleted)="onCardDetailDeleted()" />
+    }
+  }
+</div>

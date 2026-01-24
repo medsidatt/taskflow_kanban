@@ -1,0 +1,62 @@
+<div class="activity-view-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <lucide-icon [name]="icons.Activity" [size]="32" class="page-icon" />
+      <div>
+        <h1 class="page-title">Activity</h1>
+        <p class="page-subtitle">Track all changes in {{ currentWorkspace()?.name }}</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- Filter Dropdown -->
+      <div class="filter-dropdown">
+        <button class="btn-secondary">
+          <lucide-icon [name]="icons.Filter" [size]="18" />
+          <span>Filter</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity Content -->
+  @if (loading()) {
+    <div class="activity-loading">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="skeleton" style="height: 80px; margin-bottom: 1rem;"></div>
+      }
+    </div>
+  } @else if (activities().length === 0) {
+    <app-empty-state
+      icon="Activity"
+      title="No activity yet"
+      description="Activity will appear here as team members work on boards and cards" />
+  } @else {
+    <div class="activity-timeline">
+      @for (activity of activities(); track activity.id) {
+        <div class="activity-item">
+          <div class="activity-avatar">
+            <app-user-avatar
+              [name]="activity.performedByUsername || 'User'"
+              size="md" />
+          </div>
+
+          <div class="activity-content">
+            <div class="activity-header">
+              <span class="activity-user">{{ activity.performedByUsername || 'User' }}</span>
+              <span class="activity-action">{{ activity.action }}</span>
+              <span class="activity-entity">{{ activity.entityType }}</span>
+            </div>
+
+            @if (activity.details) {
+              <p class="activity-details">{{ activity.details }}</p>
+            }
+
+            <span class="activity-time">{{ activity.timestamp | date:'medium' }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

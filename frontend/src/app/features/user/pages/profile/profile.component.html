@@ -1,0 +1,117 @@
+<div class="profile-page">
+  <div class="profile-header">
+    <h1 class="profile-title">Profile</h1>
+    <p class="profile-subtitle">Manage your account</p>
+  </div>
+
+  @if (loading()) {
+    <div class="profile-loading">Loading...</div>
+  } @else {
+    <!-- Profile -->
+    <section class="profile-section">
+      <h2 class="section-title">
+        <lucide-icon [name]="icons.User" [size]="20" />
+        General
+      </h2>
+      <p class="section-hint">You can update your username and email. Other account settings are managed by your administrator.</p>
+      <div class="profile-avatar-row">
+        <app-user-avatar
+          [name]="formUsername() || formEmail() || 'User'"
+          size="lg" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="profile-username">Username</label>
+        <input
+          id="profile-username"
+          type="text"
+          class="form-input"
+          [value]="formUsername()"
+          (input)="formUsername.set($any($event.target).value)"
+          placeholder="Username"
+          minlength="1"
+          maxlength="50"
+          autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="profile-email">Email</label>
+        <input
+          id="profile-email"
+          type="email"
+          class="form-input"
+          [value]="formEmail()"
+          (input)="formEmail.set($any($event.target).value)"
+          placeholder="Email"
+          maxlength="100"
+          autocomplete="email" />
+      </div>
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="save()"
+        [disabled]="saving()">
+        {{ saving() ? 'Saving...' : 'Save changes' }}
+      </button>
+    </section>
+
+    <!-- Change password -->
+    <section class="profile-section">
+      <h2 class="section-title">
+        <lucide-icon [name]="icons.Lock" [size]="20" />
+        Change password
+      </h2>
+      <div class="form-group">
+        <label class="form-label" for="pwd-old">Current password</label>
+        <input
+          id="pwd-old"
+          type="password"
+          class="form-input"
+          [value]="passwordOld()"
+          (input)="passwordOld.set($any($event.target).value)"
+          placeholder="Current password"
+          autocomplete="current-password" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="pwd-new">New password</label>
+        <input
+          id="pwd-new"
+          type="password"
+          class="form-input"
+          [value]="passwordNew()"
+          (input)="passwordNew.set($any($event.target).value)"
+          placeholder="New password"
+          autocomplete="new-password" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="pwd-confirm">Confirm new password</label>
+        <input
+          id="pwd-confirm"
+          type="password"
+          class="form-input"
+          [value]="passwordConfirm()"
+          (input)="passwordConfirm.set($any($event.target).value)"
+          placeholder="Confirm new password"
+          autocomplete="new-password" />
+      </div>
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="changePassword()"
+        [disabled]="changingPassword() || !passwordOld() || !passwordNew() || !passwordConfirm()">
+        {{ changingPassword() ? 'Changing...' : 'Change password' }}
+      </button>
+    </section>
+
+    <!-- Preferences -->
+    <section class="profile-section">
+      <h2 class="section-title">
+        <lucide-icon [name]="icons.Settings" [size]="20" />
+        Preferences
+      </h2>
+      <p class="section-hint">Theme, notifications, and other app settings.</p>
+      <a routerLink="/settings" class="btn-secondary">
+        <lucide-icon [name]="icons.Settings" [size]="16" />
+        Open settings
+      </a>
+    </section>
+  }
+</div>

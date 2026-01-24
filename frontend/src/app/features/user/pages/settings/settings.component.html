@@ -1,0 +1,104 @@
+<div class="settings-page">
+  <div class="settings-header">
+    <h1 class="settings-title">Settings</h1>
+    <p class="settings-subtitle">App preferences and notifications</p>
+  </div>
+
+  <!-- Appearance -->
+  <section class="settings-section">
+    <h2 class="section-title">
+      <lucide-icon [name]="icons.Moon" [size]="20" />
+      Appearance
+    </h2>
+    <p class="section-hint">Choose how TaskFlow looks. System follows your operating system preference.</p>
+    <div class="theme-options">
+      <label class="theme-option" [class.active]="themeService.theme() === 'light'">
+        <input
+          type="radio"
+          name="theme"
+          [checked]="themeService.theme() === 'light'"
+          (change)="setTheme('light')" />
+        <span class="theme-option-content">
+          <lucide-icon [name]="icons.Sun" [size]="18" />
+          <span>Light</span>
+        </span>
+      </label>
+      <label class="theme-option" [class.active]="themeService.theme() === 'dark'">
+        <input
+          type="radio"
+          name="theme"
+          [checked]="themeService.theme() === 'dark'"
+          (change)="setTheme('dark')" />
+        <span class="theme-option-content">
+          <lucide-icon [name]="icons.Moon" [size]="18" />
+          <span>Dark</span>
+        </span>
+      </label>
+      <label class="theme-option" [class.active]="themeService.theme() === 'system'">
+        <input
+          type="radio"
+          name="theme"
+          [checked]="themeService.theme() === 'system'"
+          (change)="setTheme('system')" />
+        <span class="theme-option-content">
+          <lucide-icon [name]="icons.Monitor" [size]="18" />
+          <span>System</span>
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <!-- Notifications -->
+  <section class="settings-section">
+    <h2 class="section-title">
+      <lucide-icon [name]="icons.Bell" [size]="20" />
+      Notifications
+    </h2>
+    <p class="section-hint">These preferences are stored on this device. Email delivery is not implemented yet.</p>
+    <div class="toggle-rows">
+      <div class="toggle-row">
+        <div class="toggle-label">
+          <span class="toggle-title">Email when assigned to a card</span>
+          <span class="toggle-desc">Get an email when someone assigns you to a card</span>
+        </div>
+        <button
+          type="button"
+          class="toggle-switch"
+          [class.on]="notifyEmailAssigned"
+          (click)="toggleNotifyAssigned()"
+          [attr.aria-pressed]="notifyEmailAssigned"
+          title="{{ notifyEmailAssigned ? 'On' : 'Off' }}">
+          <span class="toggle-switch-knob"></span>
+        </button>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label">
+          <span class="toggle-title">Weekly digest</span>
+          <span class="toggle-desc">Summary of your boards and activity once a week</span>
+        </div>
+        <button
+          type="button"
+          class="toggle-switch"
+          [class.on]="notifyEmailDigest"
+          (click)="toggleNotifyDigest()"
+          [attr.aria-pressed]="notifyEmailDigest"
+          title="{{ notifyEmailDigest ? 'On' : 'Off' }}">
+          <span class="toggle-switch-knob"></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Account -->
+  <section class="settings-section">
+    <h2 class="section-title">
+      <lucide-icon [name]="icons.User" [size]="20" />
+      Account
+    </h2>
+    <p class="section-hint">Update your username, email, and password.</p>
+    <a routerLink="/profile" class="btn-secondary">
+      <lucide-icon [name]="icons.User" [size]="16" />
+      Manage your profile
+    </a>
+  </section>
+</div>

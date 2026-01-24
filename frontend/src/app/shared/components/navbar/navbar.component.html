@@ -1,0 +1,152 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Left Section -->
+    <div class="navbar-left">
+      <!-- Logo -->
+      <a routerLink="/boards" class="navbar-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="4" width="10" height="24" rx="2" fill="#2196f3"/>
+          <rect x="18" y="4" width="10" height="14" rx="2" fill="#64b5f6"/>
+        </svg>
+        <span class="navbar-logo-text">TaskFlow</span>
+      </a>
+    </div>
+
+    <!-- Center Section - Search (opens modal) -->
+    <div class="navbar-center">
+      <button
+        type="button"
+        class="navbar-search"
+        (click)="openSearchModal()"
+        title="Search">
+        <lucide-icon [name]="icons.Search" [size]="18" class="navbar-search-icon" />
+        <span class="navbar-search-placeholder">Search cards, boards, columns, workspaces...</span>
+      </button>
+    </div>
+
+
+    <!-- Right Section -->
+    <div class="navbar-right">
+      <!-- Quick Create -->
+      <div class="navbar-dropdown-wrapper">
+        <button
+          class="navbar-icon-button"
+          (click)="toggleDropdown('quickCreate')"
+          [attr.aria-expanded]="showQuickCreateDropdown()"
+          title="Create">
+          <lucide-icon [name]="icons.Plus" [size]="20" />
+        </button>
+
+        @if (showQuickCreateDropdown()) {
+          <div class="dropdown-menu navbar-dropdown" (click)="$event.stopPropagation()">
+            <button class="dropdown-item" (click)="createBoard()">
+              <lucide-icon [name]="icons.Plus" [size]="16" />
+              <span>Create Board</span>
+            </button>
+            <button class="dropdown-item" (click)="createCard()">
+              <lucide-icon [name]="icons.Plus" [size]="16" />
+              <span>Create Card</span>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Notifications -->
+      <div class="navbar-dropdown-wrapper">
+        <button
+          class="navbar-icon-button"
+          (click)="toggleDropdown('notifications')"
+          [attr.aria-expanded]="showNotificationsDropdown()"
+          title="Notifications">
+          <lucide-icon [name]="icons.Bell" [size]="20" />
+          <span class="navbar-badge">3</span>
+        </button>
+
+        @if (showNotificationsDropdown()) {
+          <div class="dropdown-menu navbar-dropdown navbar-dropdown-wide" (click)="$event.stopPropagation()">
+            <div class="dropdown-header">
+              <span class="text-sm font-semibold">Notifications</span>
+            </div>
+            <div class="notification-item">
+              <div class="notification-content">
+                <p class="notification-title">Card assigned to you</p>
+                <p class="notification-description">John assigned you to "Update homepage design"</p>
+                <p class="notification-time">2 hours ago</p>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-content">
+                <p class="notification-title">Comment on your card</p>
+                <p class="notification-description">Sarah commented on "Fix login bug"</p>
+                <p class="notification-time">5 hours ago</p>
+              </div>
+            </div>
+            <div class="notification-item">
+              <div class="notification-content">
+                <p class="notification-title">Board updated</p>
+                <p class="notification-description">Sprint Planning board was updated</p>
+                <p class="notification-time">1 day ago</p>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item text-center">
+              <span>View all notifications</span>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- User Profile Menu -->
+      <div class="navbar-dropdown-wrapper">
+        <button
+          class="navbar-profile-button"
+          (click)="toggleDropdown('profile')"
+          [attr.aria-expanded]="showProfileDropdown()">
+          <app-user-avatar
+            [name]="currentUser()?.username || 'User'"
+            [imageUrl]="currentUser()?.avatarUrl"
+            size="sm" />
+        </button>
+
+        @if (showProfileDropdown()) {
+          <div class="dropdown-menu navbar-dropdown" (click)="$event.stopPropagation()">
+            <div class="dropdown-header">
+              <div class="user-info">
+                <app-user-avatar
+                  [name]="currentUser()?.username || 'User'"
+                  [imageUrl]="currentUser()?.avatarUrl"
+                  size="md" />
+                <div>
+                  <p class="user-name">{{ currentUser()?.username }}</p>
+                  <p class="user-email">{{ currentUser()?.email }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" (click)="navigateToProfile()">
+              <lucide-icon [name]="icons.User" [size]="16" />
+              <span>Profile</span>
+            </button>
+            <button class="dropdown-item" (click)="navigateToSettings()">
+              <lucide-icon [name]="icons.Settings" [size]="16" />
+              <span>Settings</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger" (click)="logout()">
+              <lucide-icon [name]="icons.LogOut" [size]="16" />
+              <span>Logout</span>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Backdrop to close dropdowns when clicking outside -->
+@if (showQuickCreateDropdown() || showNotificationsDropdown() || showProfileDropdown()) {
+  <div class="navbar-backdrop" (click)="closeAllDropdowns()"></div>
+}
+
+<!-- Search modal (available on all pages via navbar in main layout) -->
+<app-search-modal />
