@@ -54,6 +54,7 @@ All project documentation lives in this `docs/` folder.
 | [COMPLETE_BACKEND_FIXES](COMPLETE_BACKEND_FIXES.md) | Complete backend fixes |
 | [COMPLETE_IMPLEMENTATION_SUMMARY](COMPLETE_IMPLEMENTATION_SUMMARY.md) | Full implementation summary |
 | [COMPLETE_INTEGRATION_GUIDE](COMPLETE_INTEGRATION_GUIDE.md) | Integration guide |
+| [COMPLETE_FIX_INDEX](COMPLETE_FIX_INDEX.md) | Fix index |
 | [COMPLETION_SUMMARY](COMPLETION_SUMMARY.md) | Completion summary |
 | [DETAILED_CHANGELOG](DETAILED_CHANGELOG.md) | Detailed changelog |
 | [DOCUMENTATION_INDEX](DOCUMENTATION_INDEX.md) | Index: workspace boards & real-time |
@@ -61,6 +62,8 @@ All project documentation lives in this `docs/` folder.
 | [FINAL_FIXES_SUMMARY](FINAL_FIXES_SUMMARY.md) | Final fixes summary |
 | [FINAL_STATUS_REPORT](FINAL_STATUS_REPORT.md) | Final status report |
 | [FINAL_VERIFICATION_CHECKLIST](FINAL_VERIFICATION_CHECKLIST.md) | Verification checklist |
+| [FINAL_RESOLUTION_COMPLETE](FINAL_RESOLUTION_COMPLETE.md) | Final resolution complete |
+| [FINAL_SYSTEM_STATUS](FINAL_SYSTEM_STATUS.md) | Final system status |
 | [FINAL-STATUS](FINAL-STATUS.md) | Final status |
 | [FIX_CARD_POSITION_FIELD](FIX_CARD_POSITION_FIELD.md) | Card position field fix |
 | [FIX_COLUMN_POSITION_FIELD](FIX_COLUMN_POSITION_FIELD.md) | Column position field fix |
