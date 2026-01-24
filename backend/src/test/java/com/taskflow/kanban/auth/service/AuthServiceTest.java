@@ -85,6 +85,6 @@ class AuthServiceTest {
         invalidLogin.setLogin("test@example.com");
         invalidLogin.setPassword("wrongpassword");
 
-        assertThrows(IllegalArgumentException.class, () -> authService.login(invalidLogin));
+        assertThrows(com.taskflow.kanban.exception.UnauthorizedException.class, () -> authService.login(invalidLogin));
     }
 }

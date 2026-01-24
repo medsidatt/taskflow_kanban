@@ -14,6 +14,7 @@ All project documentation lives in this `docs/` folder.
 | Purpose | Document |
 |--------|----------|
 | **Start here** | [QUICK_START_TEST.md](QUICK_START_TEST.md) |
+| **Reference** | [REFERENCE.md](REFERENCE.md) — config, API, testing, CI/CD |
 | **Doc index (workspace boards & real-time)** | [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) |
 | **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | **Quick setup** | [QUICK_SETUP_GUIDE.md](QUICK_SETUP_GUIDE.md), [QUICKSTART.md](QUICKSTART.md) |
@@ -53,6 +54,7 @@ All project documentation lives in this `docs/` folder.
 | [COMPLETE_BACKEND_FIXES](COMPLETE_BACKEND_FIXES.md) | Complete backend fixes |
 | [COMPLETE_IMPLEMENTATION_SUMMARY](COMPLETE_IMPLEMENTATION_SUMMARY.md) | Full implementation summary |
 | [COMPLETE_INTEGRATION_GUIDE](COMPLETE_INTEGRATION_GUIDE.md) | Integration guide |
+| [COMPLETE_FIX_INDEX](COMPLETE_FIX_INDEX.md) | Fix index |
 | [COMPLETION_SUMMARY](COMPLETION_SUMMARY.md) | Completion summary |
 | [DETAILED_CHANGELOG](DETAILED_CHANGELOG.md) | Detailed changelog |
 | [DOCUMENTATION_INDEX](DOCUMENTATION_INDEX.md) | Index: workspace boards & real-time |
@@ -60,6 +62,8 @@ All project documentation lives in this `docs/` folder.
 | [FINAL_FIXES_SUMMARY](FINAL_FIXES_SUMMARY.md) | Final fixes summary |
 | [FINAL_STATUS_REPORT](FINAL_STATUS_REPORT.md) | Final status report |
 | [FINAL_VERIFICATION_CHECKLIST](FINAL_VERIFICATION_CHECKLIST.md) | Verification checklist |
+| [FINAL_RESOLUTION_COMPLETE](FINAL_RESOLUTION_COMPLETE.md) | Final resolution complete |
+| [FINAL_SYSTEM_STATUS](FINAL_SYSTEM_STATUS.md) | Final system status |
 | [FINAL-STATUS](FINAL-STATUS.md) | Final status |
 | [FIX_CARD_POSITION_FIELD](FIX_CARD_POSITION_FIELD.md) | Card position field fix |
 | [FIX_COLUMN_POSITION_FIELD](FIX_COLUMN_POSITION_FIELD.md) | Column position field fix |
@@ -83,6 +87,7 @@ All project documentation lives in this `docs/` folder.
 | [QUICK_NPE_FIX](QUICK_NPE_FIX.md) | Quick NPE fix |
 | [QUICK_REFERENCE](QUICK_REFERENCE.md) | Quick reference |
 | [QUICK_REFERENCE_BOARDS_REALTIME](QUICK_REFERENCE_BOARDS_REALTIME.md) | Boards real-time quick ref |
+| [REFERENCE](REFERENCE.md) | **Reference** — config, API, testing, CI/CD |
 | [QUICK_SETUP_GUIDE](QUICK_SETUP_GUIDE.md) | Quick setup guide |
 | [QUICK_START](QUICK_START.md) | Quick start |
 | [QUICK_START_TEST](QUICK_START_TEST.md) | Quick start test |

@@ -10,6 +10,9 @@ import com.taskflow.kanban.user.repository.UserRepository;
 import com.taskflow.kanban.workspace.dto.WorkspaceCreateDto;
 import com.taskflow.kanban.workspace.dto.WorkspaceUpdateDto;
 import com.taskflow.kanban.workspace.entity.Workspace;
+import com.taskflow.kanban.workspace.entity.WorkspaceMember;
+import com.taskflow.kanban.workspace.entity.WorkspaceRole;
+import com.taskflow.kanban.workspace.repository.WorkspaceMemberRepository;
 import com.taskflow.kanban.workspace.repository.WorkspaceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,6 +48,9 @@ class WorkspaceControllerSecurityTest {
 
     @Autowired
     private WorkspaceRepository workspaceRepository;
+
+    @Autowired
+    private WorkspaceMemberRepository workspaceMemberRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -102,6 +108,11 @@ class WorkspaceControllerSecurityTest {
                 .isPrivate(false)
                 .build();
         workspace = workspaceRepository.save(workspace);
+        workspaceMemberRepository.save(WorkspaceMember.builder()
+                .workspace(workspace)
+                .user(user)
+                .role(WorkspaceRole.OWNER)
+                .build());
 
         WorkspaceUpdateDto updateDto = new WorkspaceUpdateDto();
         updateDto.setName("New Name");
@@ -121,6 +132,11 @@ class WorkspaceControllerSecurityTest {
                 .isPrivate(false)
                 .build();
         workspace = workspaceRepository.save(workspace);
+        workspaceMemberRepository.save(WorkspaceMember.builder()
+                .workspace(workspace)
+                .user(user)
+                .role(WorkspaceRole.OWNER)
+                .build());
 
         mockMvc.perform(delete("/workspaces/" + workspace.getId())
                         .header("Authorization", userToken))
