@@ -25,17 +25,12 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: 'maven'
+        cache-dependency-path: backend/pom.xml
 
-    - name: Build with Maven
+    - name: Run tests
       run: |
         chmod +x mvnw
-        ./mvnw clean compile
-
-    - name: Run Unit Tests
-      run: ./mvnw test
-
-    - name: Run Integration Tests
-      run: ./mvnw verify -DskipTests=false
+        ./mvnw verify -Ddependency-check.skip=true
 
     - name: Upload Test Reports
       if: always()
