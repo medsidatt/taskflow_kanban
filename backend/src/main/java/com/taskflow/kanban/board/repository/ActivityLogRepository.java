@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ActivityLogRepository extends JpaRepository<ActivityLog, UUID> {
-    // Find activities related to a specific entity (e.g., a card or board)
     List<ActivityLog> findByEntityIdOrderByTimestampDesc(UUID entityId);
+    List<ActivityLog> findByEntityIdInOrderByTimestampDesc(List<UUID> entityIds);
+    List<ActivityLog> findByPerformedByOrderByTimestampDesc(UUID performedBy);
 }

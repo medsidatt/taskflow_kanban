@@ -16,4 +16,14 @@ export class ActivityService {
     const params = new HttpParams().set('entityId', entityId);
     return this.http.get<ActivityLog[]>(this.API_URL, { params });
   }
+
+  getActivitiesByWorkspace(workspaceId: string): Observable<ActivityLog[]> {
+    const params = new HttpParams().set('workspaceId', workspaceId);
+    return this.http.get<ActivityLog[]>(this.API_URL, { params });
+  }
+
+  getMyActivities(): Observable<ActivityLog[]> {
+    const params = new HttpParams().set('me', 'true');
+    return this.http.get<ActivityLog[]>(this.API_URL, { params });
+  }
 }

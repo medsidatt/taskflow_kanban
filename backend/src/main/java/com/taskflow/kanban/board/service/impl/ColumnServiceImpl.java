@@ -11,10 +11,13 @@ import com.taskflow.kanban.board.repository.BoardRepository;
 import com.taskflow.kanban.board.repository.CardRepository;
 import com.taskflow.kanban.board.repository.ColumnRepository;
 import com.taskflow.kanban.board.repository.CommentRepository;
+import com.taskflow.kanban.board.service.ActivityService;
 import com.taskflow.kanban.board.service.BoardService;
 import com.taskflow.kanban.board.service.ColumnService;
+import com.taskflow.kanban.security.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,7 @@ public class ColumnServiceImpl implements ColumnService {
     private final CardRepository cardRepository;
     private final AttachmentRepository attachmentRepository;
     private final CommentRepository commentRepository;
+    private final ActivityService activityService;
 
     @Override
     public ColumnDto createColumn(ColumnCreateDto createDto) {
@@ -51,7 +55,11 @@ public class ColumnServiceImpl implements ColumnService {
                 .position(position)
                 .build();
 
-        return toDto(columnRepository.save(column));
+        BoardColumn savedColumn = columnRepository.save(column);
+        activityService.logActivity(savedColumn.getId(), "Column", "CREATE",
+                "Column '" + savedColumn.getName() + "' was created in board '" + board.getName() + "'",
+                getCurrentUserId());
+        return toDto(savedColumn);
     }
 
     @Override
@@ -72,19 +80,26 @@ public class ColumnServiceImpl implements ColumnService {
     @Override
     public ColumnDto updateColumn(UUID id, ColumnUpdateDto updateDto) {
         BoardColumn column = findColumn(id);
+        boardService.requireBoardAccess(column.getBoard().getId());
         if (updateDto.getName() != null) column.setName(updateDto.getName());
         if (updateDto.getWipLimit() != null) column.setWipLimit(updateDto.getWipLimit());
         if (updateDto.getPosition() != null) column.setPosition(updateDto.getPosition());
         if (updateDto.getArchived() != null) column.setArchived(updateDto.getArchived());
 
-        return toDto(columnRepository.save(column));
+        BoardColumn updatedColumn = columnRepository.save(column);
+        activityService.logActivity(id, "Column", "UPDATE",
+                "Column '" + updatedColumn.getName() + "' was updated",
+                getCurrentUserId());
+        return toDto(updatedColumn);
     }
 
     @Override
     public void deleteColumn(UUID id) {
         BoardColumn columnToDelete = findColumn(id);
+        boardService.requireBoardAccess(columnToDelete.getBoard().getId());
         UUID boardId = columnToDelete.getBoard().getId();
         int oldPosition = columnToDelete.getPosition();
+        String columnName = columnToDelete.getName();
 
         // Delete in dependency order: cards (attachments, comments) -> column
         List<Card> cards = cardRepository.findByColumnIdOrderByPositionAsc(id);
@@ -94,6 +109,9 @@ public class ColumnServiceImpl implements ColumnService {
             cardRepository.delete(card);
         }
         columnRepository.delete(columnToDelete);
+        activityService.logActivity(id, "Column", "DELETE",
+                "Column '" + columnName + "' was deleted",
+                getCurrentUserId());
 
         List<BoardColumn> columnsToUpdate = columnRepository.findByBoardIdOrderByPositionAsc(boardId);
         for (BoardColumn column : columnsToUpdate) {
@@ -118,5 +136,17 @@ public class ColumnServiceImpl implements ColumnService {
                 .archived(column.isArchived())
                 .boardId(column.getBoard().getId())
                 .build();
+    }
+
+    private UUID getCurrentUserId() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getPrincipal() == null) {
+            return null;
+        }
+        Object principal = auth.getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            return ((CustomUserDetails) principal).getId();
+        }
+        return null;
     }
 }

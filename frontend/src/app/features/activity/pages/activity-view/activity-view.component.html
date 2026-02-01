@@ -5,7 +5,7 @@
       <lucide-icon [name]="icons.Activity" [size]="32" class="page-icon" />
       <div>
         <h1 class="page-title">Activity</h1>
-        <p class="page-subtitle">Track all changes in {{ currentWorkspace()?.name }}</p>
+        <p class="page-subtitle">{{ currentWorkspace() ? 'Track all changes in ' + (currentWorkspace()?.name || 'this workspace') : 'Track your recent activities' }}</p>
       </div>
     </div>
 
