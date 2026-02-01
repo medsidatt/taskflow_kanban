@@ -7,6 +7,7 @@ export interface BoardColumn {
   wipLimit?: number;
   archived: boolean;
   boardId: string; // UUID
+  color?: string; // Hex color code for column
   // Extended for UI
   cards?: Card[];
 }
@@ -16,6 +17,7 @@ export interface ColumnCreateDto {
   boardId: string; // UUID
   position?: number;
   wipLimit?: number;
+  color?: string;
 }
 
 export interface ColumnUpdateDto {
@@ -23,4 +25,5 @@ export interface ColumnUpdateDto {
   position?: number;
   wipLimit?: number;
   archived?: boolean;
+  color?: string;
 }

@@ -111,7 +111,28 @@ export class BoardColumnComponent {
    * Get a color for the column header
    */
   getColumnColor(): string {
+    if (this.column.color) {
+      return this.column.color;
+    }
     const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#764ba2'];
     return colors[this.column.position % colors.length];
+  }
+
+  /**
+   * Get background color for the column header (lighter version)
+   */
+  getColumnBackgroundColor(): string {
+    const color = this.getColumnColor();
+    return this.hexToRgba(color, 0.08);
+  }
+
+  /**
+   * Convert hex color to rgba with transparency
+   */
+  private hexToRgba(hex: string, alpha: number): string {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 }

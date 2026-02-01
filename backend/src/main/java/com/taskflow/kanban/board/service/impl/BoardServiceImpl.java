@@ -16,6 +16,7 @@ import com.taskflow.kanban.board.repository.CardRepository;
 import com.taskflow.kanban.board.repository.ColumnRepository;
 import com.taskflow.kanban.board.repository.CommentRepository;
 import com.taskflow.kanban.board.repository.LabelRepository;
+import com.taskflow.kanban.board.service.ActivityService;
 import com.taskflow.kanban.board.service.BoardService;
 import com.taskflow.kanban.security.CustomUserDetails;
 import com.taskflow.kanban.user.entity.User;
@@ -52,6 +53,7 @@ public class BoardServiceImpl implements BoardService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final UserRepository userRepository;
+    private final ActivityService activityService;
 
     @Override
     public BoardDto createBoard(BoardCreateDto createDto) {
@@ -77,7 +79,13 @@ public class BoardServiceImpl implements BoardService {
         
         board.getMembers().add(ownerMember);
 
-        return toDto(boardRepository.save(board));
+        Board savedBoard = boardRepository.save(board);
+        
+        activityService.logActivity(savedBoard.getId(), "Board", "CREATE", 
+            "Board '" + savedBoard.getName() + "' was created in workspace '" + workspace.getName() + "'",
+            getCurrentUserId());
+
+        return toDto(savedBoard);
     }
 
     @Override
@@ -95,23 +103,39 @@ public class BoardServiceImpl implements BoardService {
         
         board.getMembers().add(newMember);
         boardRepository.save(board);
+        
+        activityService.logActivity(boardId, "Board", "MEMBER_ADD", 
+            "User '" + user.getUsername() + "' was added to board '" + board.getName() + "' as " + role,
+            getCurrentUserId());
     }
 
     @Override
     public void removeMember(UUID boardId, UUID userId) {
         checkPermission(boardId, BoardRole.ADMIN);
         Board board = findBoard(boardId);
+        User removedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         board.getMembers().removeIf(member -> member.getUser().getId().equals(userId));
         boardRepository.save(board);
+        
+        activityService.logActivity(boardId, "Board", "MEMBER_REMOVE", 
+            "User '" + removedUser.getUsername() + "' was removed from board '" + board.getName() + "'",
+            getCurrentUserId());
     }
 
     @Override
     public void updateMemberRole(UUID boardId, UUID userId, BoardRole role) {
         checkPermission(boardId, BoardRole.ADMIN);
+        Board board = findBoard(boardId);
         BoardMember member = boardMemberRepository.findByBoardIdAndUserId(boardId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Board member not found"));
+        BoardRole oldRole = member.getRole();
         member.setRole(role);
         boardMemberRepository.save(member);
+        
+        activityService.logActivity(boardId, "Board", "MEMBER_ROLE_UPDATE", 
+            "User '" + member.getUser().getUsername() + "' role changed from " + oldRole + " to " + role + " on board '" + board.getName() + "'",
+            getCurrentUserId());
     }
 
     // --- Other methods ---
@@ -178,13 +202,20 @@ public class BoardServiceImpl implements BoardService {
         if (updateDto.getArchived() != null) board.setArchived(updateDto.getArchived());
         if (updateDto.getBackgroundColor() != null) board.setBackgroundColor(updateDto.getBackgroundColor());
         
-        return toDto(boardRepository.save(board));
+        Board updatedBoard = boardRepository.save(board);
+        
+        activityService.logActivity(id, "Board", "UPDATE", 
+            "Board '" + updatedBoard.getName() + "' was updated",
+            getCurrentUserId());
+        
+        return toDto(updatedBoard);
     }
 
     @Override
     public void deleteBoard(UUID id) {
         checkPermission(id, BoardRole.OWNER);
         Board board = findBoard(id);
+        String boardName = board.getName();
 
         // Delete in dependency order to satisfy foreign keys: cards (and their attachments, comments, card_members, card_labels) -> columns -> labels -> board_members -> board
         List<BoardColumn> columns = columnRepository.findByBoardIdOrderByPositionAsc(id);
@@ -200,6 +231,10 @@ public class BoardServiceImpl implements BoardService {
         labelRepository.deleteAll(labelRepository.findByBoardId(id));
         boardMemberRepository.deleteAll(boardMemberRepository.findByBoardId(id));
         boardRepository.delete(board);
+        
+        activityService.logActivity(id, "Board", "DELETE", 
+            "Board '" + boardName + "' was deleted",
+            getCurrentUserId());
     }
 
     private Board findBoard(UUID id) {

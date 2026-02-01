@@ -1,9 +1,9 @@
 <div class="column-container">
   <!-- Column Header -->
-  <div class="column-header" [style.border-left-color]="getColumnColor()">
+  <div class="column-header" [style.border-left-color]="getColumnColor()" [style.background-color]="getColumnBackgroundColor()">
     <div class="column-title-section">
       <h3 class="column-title">{{ column.name }}</h3>
-      <span class="card-count">{{ cards.length }}</span>
+      <span class="card-count" [style.background-color]="getColumnColor()" [style.color]="'white'">{{ cards.length }}</span>
     </div>
     <div class="column-actions">
       <button class="column-menu-btn" title="Column menu">⋮</button>

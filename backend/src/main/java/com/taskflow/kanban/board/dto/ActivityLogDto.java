@@ -20,4 +20,5 @@ public class ActivityLogDto {
     private String details;
     private Instant timestamp;
     private UUID performedBy;
+    private String performedByUsername;
 }

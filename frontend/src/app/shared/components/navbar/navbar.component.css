@@ -9,6 +9,11 @@
   height: var(--navbar-height, 4rem);
 }
 
+[data-theme="dark"] .navbar {
+  --navbar-bg: var(--color-background);
+  background: var(--navbar-bg);
+}
+
 .navbar-container {
   display: flex;
   align-items: center;
@@ -648,8 +653,4 @@
   &:hover {
     background-color: var(--color-gray-400);
   }
-}
-
-[data-theme="dark"] .navbar {
-  --navbar-bg: var(--color-background);
 }

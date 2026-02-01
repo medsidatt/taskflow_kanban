@@ -14,7 +14,7 @@
 /* ====== LOGIN CARD ====== */
 
 .login-card {
-  background: var(--color-white);
+  background: var(--color-background);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-2xl);
   padding: var(--spacing-8);
@@ -102,6 +102,11 @@
   background: rgba(245, 54, 92, 0.05);
   border-color: var(--color-danger);
   color: var(--color-danger);
+}
+
+[data-theme="dark"] .alert-danger {
+  background: rgba(245, 54, 92, 0.15);
+  color: var(--color-danger-light);
 }
 
 .alert-icon {
@@ -195,7 +200,7 @@
 
 .form-input:focus {
   outline: none;
-  background: var(--color-white);
+  background: var(--color-background);
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.1);
 }
@@ -541,6 +546,21 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ====== DARK MODE ====== */
+
+[data-theme="dark"] .login-card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+}
+
+[data-theme="dark"] .form-input:focus {
+  box-shadow: 0 0 0 3px rgba(94, 114, 228, 0.2);
+}
+
+[data-theme="dark"] .form-input:invalid:not(:placeholder-shown) {
+  box-shadow: 0 0 0 3px rgba(245, 54, 92, 0.2);
 }
 
 /* Accessibility */

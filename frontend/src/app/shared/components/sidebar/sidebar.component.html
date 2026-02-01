@@ -1,4 +1,4 @@
-<aside class="sidebar" [class.collapsed]="isCollapsed()" (click)="closeDropdowns()">
+<aside class="sidebar" [class.collapsed]="isCollapsed()" (click)="closeDropdowns($event)">
   <!-- Collapse toggle (always visible) -->
   <button
     class="sidebar-toggle"
@@ -42,83 +42,91 @@
           <button
           type="button"
           class="sidebar-workspace-selector-btn"
-          (click)="toggleDropdown('workspace'); $event.stopPropagation()"
+          (click)="toggleDropdown('workspace', $event)"
           [attr.aria-expanded]="showWorkspaceDropdown()"
+          [disabled]="viewAllBoards()"
           title="Switch workspace">
           <span class="sidebar-workspace-selector-avatar">
-            {{ viewAllBoards() ? 'A' : (currentWorkspace()?.name?.charAt(0).toUpperCase() || 'W') }}
+            {{ currentWorkspace()?.name?.charAt(0).toUpperCase() || 'W' }}
           </span>
-          <span class="sidebar-workspace-selector-name">{{ viewAllBoards() ? 'All Boards' : (currentWorkspace()?.name || 'Workspace') }}</span>
+          <span class="sidebar-workspace-selector-name">{{ currentWorkspace()?.name || 'Workspace' }}</span>
           <lucide-icon [name]="icons.ChevronDown" [size]="16" class="sidebar-workspace-selector-chevron" />
           </button>
 
           @if (showWorkspaceDropdown()) {
           <div class="sidebar-workspace-selector-dropdown" (click)="$event.stopPropagation()">
-            <div class="sidebar-workspace-selector-dropdown-header">
-              <span class="sidebar-workspace-selector-dropdown-avatar">
-                {{ viewAllBoards() ? 'A' : (currentWorkspace()?.name?.charAt(0).toUpperCase() || 'W') }}
-              </span>
-              <div class="sidebar-workspace-selector-dropdown-meta">
-                <strong class="sidebar-workspace-selector-dropdown-title">{{ viewAllBoards() ? 'All Boards' : (currentWorkspace()?.name || 'Workspace') }}</strong>
-                <span class="sidebar-workspace-selector-dropdown-desc">{{ viewAllBoards() ? 'Tasks from every workspace' : (currentWorkspace()?.description || 'Personal workspace') }}</span>
+            @if (!viewAllBoards() && currentWorkspace()) {
+              <div class="sidebar-workspace-selector-dropdown-header">
+                <span class="sidebar-workspace-selector-dropdown-avatar">
+                  {{ currentWorkspace()?.name?.charAt(0).toUpperCase() || 'W' }}
+                </span>
+                <div class="sidebar-workspace-selector-dropdown-meta">
+                  <strong class="sidebar-workspace-selector-dropdown-title">{{ currentWorkspace()?.name || 'Workspace' }}</strong>
+                  <span class="sidebar-workspace-selector-dropdown-desc">{{ currentWorkspace()?.description || 'Personal workspace' }}</span>
+                </div>
               </div>
-            </div>
+            }
 
-            <div class="sidebar-workspace-selector-dropdown-divider"></div>
-
-            <div class="sidebar-workspace-selector-dropdown-actions">
-              <button
-                type="button"
-                class="sidebar-workspace-selector-action"
-                [disabled]="!currentWorkspace()?.id"
-                (click)="openWorkspaceBoardsList(currentWorkspace()?.id, $event)"
-                title="View all boards">
-                <lucide-icon [name]="icons.Menu" [size]="16" />
-                <span class="sidebar-workspace-selector-action-label">Boards</span>
-                <span class="sidebar-workspace-selector-action-hint">View all</span>
-              </button>
-              <button
-                type="button"
-                class="sidebar-workspace-selector-action"
-                [disabled]="!currentWorkspace()?.id"
-                (click)="openWorkspaceActivity(currentWorkspace()?.id, $event)"
-                title="Workspace activity">
-                <lucide-icon [name]="icons.Activity" [size]="16" />
-                <span class="sidebar-workspace-selector-action-label">Activity</span>
-                <span class="sidebar-workspace-selector-action-hint">View</span>
-              </button>
-              <button
-                type="button"
-                class="sidebar-workspace-selector-action"
-                [disabled]="!currentWorkspace()?.id"
-                (click)="openWorkspaceMembers(currentWorkspace()?.id, $event)"
-                title="Manage members">
-                <lucide-icon [name]="icons.Users" [size]="16" />
-                <span class="sidebar-workspace-selector-action-label">Members</span>
-                <span class="sidebar-workspace-selector-action-hint">Manage</span>
-              </button>
-              <button
-                type="button"
-                class="sidebar-workspace-selector-action"
-                [disabled]="!currentWorkspace()?.id"
-                (click)="openWorkspaceSettings(currentWorkspace()?.id, $event)"
-                title="Workspace settings">
-                <lucide-icon [name]="icons.Settings" [size]="16" />
-                <span class="sidebar-workspace-selector-action-label">Settings</span>
-                <span class="sidebar-workspace-selector-action-hint">Configure</span>
-              </button>
-            </div>
-
-            @if (workspaces() && workspaces().length > 1) {
+            @if (!viewAllBoards() && currentWorkspace()) {
               <div class="sidebar-workspace-selector-dropdown-divider"></div>
+              <div class="sidebar-workspace-selector-dropdown-actions">
+                <button
+                  type="button"
+                  class="sidebar-workspace-selector-action"
+                  [disabled]="!currentWorkspace()?.id"
+                  (click)="openWorkspaceBoardsList(currentWorkspace()?.id, $event)"
+                  title="View all boards">
+                  <lucide-icon [name]="icons.Menu" [size]="16" />
+                  <span class="sidebar-workspace-selector-action-label">Boards</span>
+                  <span class="sidebar-workspace-selector-action-hint">View all</span>
+                </button>
+                <button
+                  type="button"
+                  class="sidebar-workspace-selector-action"
+                  [disabled]="!currentWorkspace()?.id"
+                  (click)="openWorkspaceActivity(currentWorkspace()?.id, $event)"
+                  title="Workspace activity">
+                  <lucide-icon [name]="icons.Activity" [size]="16" />
+                  <span class="sidebar-workspace-selector-action-label">Activity</span>
+                  <span class="sidebar-workspace-selector-action-hint">View</span>
+                </button>
+                <button
+                  type="button"
+                  class="sidebar-workspace-selector-action"
+                  [disabled]="!currentWorkspace()?.id"
+                  (click)="openWorkspaceMembers(currentWorkspace()?.id, $event)"
+                  title="Manage members">
+                  <lucide-icon [name]="icons.Users" [size]="16" />
+                  <span class="sidebar-workspace-selector-action-label">Members</span>
+                  <span class="sidebar-workspace-selector-action-hint">Manage</span>
+                </button>
+                <button
+                  type="button"
+                  class="sidebar-workspace-selector-action"
+                  [disabled]="!currentWorkspace()?.id"
+                  (click)="openWorkspaceSettings(currentWorkspace()?.id, $event)"
+                  title="Workspace settings">
+                  <lucide-icon [name]="icons.Settings" [size]="16" />
+                  <span class="sidebar-workspace-selector-action-label">Settings</span>
+                  <span class="sidebar-workspace-selector-action-hint">Configure</span>
+                </button>
+              </div>
+            }
+
+            @if (workspaces() && workspaces().length > 0) {
+              @if (!viewAllBoards() && currentWorkspace()) {
+                <div class="sidebar-workspace-selector-dropdown-divider"></div>
+              }
               <div class="sidebar-workspace-selector-dropdown-section">
-                <p class="sidebar-workspace-selector-dropdown-section-title">Other workspaces</p>
+                <p class="sidebar-workspace-selector-dropdown-section-title">
+                  {{ viewAllBoards() ? 'Workspaces' : 'Other workspaces' }}
+                </p>
                 @for (workspace of workspaces(); track workspace.id) {
-                  @if (workspace.id !== currentWorkspace()?.id) {
+                  @if (viewAllBoards() || workspace.id !== currentWorkspace()?.id) {
                     <button
                       type="button"
                       class="sidebar-workspace-selector-dropdown-item"
-                      (click)="selectWorkspace(workspace)"
+                      (click)="selectWorkspace(workspace, $event)"
                       [title]="workspace.name">
                       <span class="sidebar-workspace-selector-dropdown-item-avatar">{{ workspace.name.charAt(0).toUpperCase() }}</span>
                       <span class="sidebar-workspace-selector-dropdown-item-name">{{ workspace.name }}</span>
@@ -127,26 +135,25 @@
                 }
               </div>
             }
-
-            <div class="sidebar-workspace-selector-dropdown-divider"></div>
-
-            <div class="sidebar-workspace-selector-dropdown-footer">
-              <button
-                type="button"
-                class="sidebar-workspace-selector-dropdown-footer-link"
-                [class.active]="viewAllBoards()"
-                (click)="selectAllBoards($event)">
-                <lucide-icon [name]="icons.Grid" [size]="16" />
-                <span>All Boards</span>
-              </button>
-              <a class="sidebar-workspace-selector-dropdown-footer-link" routerLink="/workspaces">
-                <lucide-icon [name]="icons.Menu" [size]="16" />
-                <span>All workspaces</span>
-              </a>
-            </div>
           </div>
           }
         </div>
+
+        <!-- All Boards and All Workspaces Links -->
+        <nav class="sidebar-nav" (click)="$event.stopPropagation()">
+          <a routerLink="/boards" routerLinkActive="active" class="sidebar-nav-item">
+            <span class="sidebar-nav-icon">
+              <lucide-icon [name]="icons.Grid" [size]="18" />
+            </span>
+            <span class="sidebar-nav-label">All Boards</span>
+          </a>
+          <a routerLink="/workspaces" routerLinkActive="active" class="sidebar-nav-item">
+            <span class="sidebar-nav-icon">
+              <lucide-icon [name]="icons.Briefcase" [size]="18" />
+            </span>
+            <span class="sidebar-nav-label">All Workspaces</span>
+          </a>
+        </nav>
       </section>
     </div>
   } @else {
@@ -161,7 +168,16 @@
       <a class="sidebar-collapsed-item" routerLink="/settings" routerLinkActive="active" title="Settings">
         <lucide-icon [name]="icons.Settings" [size]="20" />
       </a>
-      <a class="sidebar-collapsed-item" routerLink="/workspaces" title="Workspaces">
+      <button
+        type="button"
+        class="sidebar-collapsed-item"
+        [class.active]="viewAllBoards()"
+        (click)="selectAllBoards($event); $event.stopPropagation(); $event.stopImmediatePropagation()"
+        (mousedown)="$event.stopPropagation()"
+        title="All Boards">
+        <lucide-icon [name]="icons.Grid" [size]="20" />
+      </button>
+      <a class="sidebar-collapsed-item" routerLink="/workspaces" routerLinkActive="active" title="All Workspaces">
         <lucide-icon [name]="icons.Briefcase" [size]="20" />
       </a>
     </nav>

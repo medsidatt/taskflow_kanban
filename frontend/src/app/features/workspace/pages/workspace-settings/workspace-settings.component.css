@@ -10,25 +10,25 @@
 .settings-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-text, #18181b);
+  color: var(--color-text);
   margin: 0 0 0.25rem 0;
 }
 
 .settings-subtitle {
   font-size: 0.9375rem;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
 .settings-loading,
 .settings-error {
   padding: 2rem;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
 }
 
 .settings-section {
-  background: var(--color-background, #fff);
-  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 1.25rem 1.5rem;
   margin-bottom: 1.5rem;
@@ -37,7 +37,7 @@
 .section-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--color-text, #18181b);
+  color: var(--color-text);
   margin: 0 0 1rem 0;
   display: flex;
   align-items: center;
@@ -46,7 +46,7 @@
 
 .section-hint {
   font-size: 0.875rem;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   margin: -0.5rem 0 1rem 0;
 }
 
@@ -62,7 +62,7 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-text, #18181b);
+  color: var(--color-text);
   margin-bottom: 0.375rem;
 }
 
@@ -71,23 +71,28 @@
   width: 100%;
   padding: 0.5rem 0.75rem;
   font-size: 0.9375rem;
-  border: 1px solid var(--color-border, #e5e7eb);
+  border: 1px solid var(--color-border);
   border-radius: 0.375rem;
-  color: var(--color-text, #18181b);
-  background: var(--color-background, #fff);
+  color: var(--color-text);
+  background: var(--color-background);
 }
 
 .form-input:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: var(--primary-500, #3b82f6);
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-textarea:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .form-input[readonly],
 .form-textarea[readonly] {
-  background: var(--color-gray-50, #f9fafb);
-  color: var(--color-text-secondary, #6b7280);
+  background: var(--color-gray-100);
+  color: var(--color-text-secondary);
 }
 
 .form-textarea {
@@ -106,7 +111,7 @@
   align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.9375rem;
-  color: var(--color-text, #18181b);
+  color: var(--color-text);
   cursor: pointer;
 }
 
@@ -150,7 +155,7 @@
 
 /* Danger zone */
 .danger-zone .section-title {
-  color: var(--error-600, #dc2626);
+  color: var(--color-danger);
 }
 
 .danger-block {
@@ -164,13 +169,13 @@
 .danger-block strong {
   display: block;
   font-size: 0.9375rem;
-  color: var(--color-text, #18181b);
+  color: var(--color-text);
   margin-bottom: 0.25rem;
 }
 
 .danger-desc {
   font-size: 0.875rem;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   margin: 0;
   max-width: 360px;
 }
@@ -201,6 +206,17 @@
 
 .danger-hint {
   font-size: 0.8125rem;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   font-style: italic;
+}
+
+/* ====== DARK MODE ====== */
+[data-theme="dark"] .settings-section {
+  background: var(--color-background);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .form-input[readonly],
+[data-theme="dark"] .form-textarea[readonly] {
+  background: var(--color-gray-100);
 }

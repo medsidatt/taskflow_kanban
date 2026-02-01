@@ -93,8 +93,16 @@ export class SidebarComponent implements OnInit {
     this.showWorkspaceDropdown.set(false);
   }
 
-  toggleDropdown(type: 'workspace'): void {
+  toggleDropdown(type: 'workspace', event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     if (type === 'workspace') {
+      // Don't toggle if viewing all boards
+      if (this.viewAllBoards()) {
+        this.showWorkspaceDropdown.set(false);
+        return;
+      }
       this.showWorkspaceDropdown.update(v => !v);
     }
   }
@@ -106,21 +114,52 @@ export class SidebarComponent implements OnInit {
     this.showWorkspaceDropdown.set(false);
   }
 
-  selectWorkspace(workspace: Workspace): void {
+  selectWorkspace(workspace: Workspace, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     if (!workspace?.id) return;
+    // Close dropdown first
+    this.showWorkspaceDropdown.set(false);
+    // Then set workspace and navigate
     this.workspaceStateService.setCurrentWorkspace(workspace);
     this.navigateToWorkspace(workspace.id);
-    this.showWorkspaceDropdown.set(false);
   }
 
   selectAllBoards(event?: Event): void {
-    event?.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+    // Don't touch the dropdown at all - just set state and navigate
     this.workspaceStateService.setViewAllBoards(true);
     this.router.navigate(['/boards']);
-    this.showWorkspaceDropdown.set(false);
   }
 
-  closeDropdowns(): void {
+  closeDropdowns(event?: Event): void {
+    // Don't close if clicking inside the dropdown or on navigation items
+    if (event) {
+      const target = event.target as HTMLElement;
+      // If clicking on "All Boards" button, don't touch dropdown at all - just return
+      const allBoardsButton = target.closest('button.sidebar-nav-item, button.sidebar-collapsed-item');
+      if (allBoardsButton && (allBoardsButton.textContent?.includes('All Boards') || allBoardsButton.getAttribute('title') === 'All Boards')) {
+        // Don't touch dropdown - just return
+        return;
+      }
+      // Don't close if clicking inside the dropdown
+      if (target.closest('.sidebar-workspace-selector-dropdown')) {
+        return;
+      }
+      // Don't close if clicking on the workspace selector button itself
+      if (target.closest('.sidebar-workspace-selector-btn')) {
+        return;
+      }
+      // Don't close if clicking on other navigation items
+      if (target.closest('.sidebar-nav-item') || target.closest('.sidebar-collapsed-item')) {
+        return;
+      }
+    }
     this.showWorkspaceDropdown.set(false);
   }
 }

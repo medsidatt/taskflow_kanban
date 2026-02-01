@@ -3,10 +3,10 @@
 .card {
   --card-radius: 10px;
   --card-padding: 14px;
-  --card-bg: #ffffff;
-  --card-border: 1px solid var(--border-color, #e4e4e7);
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --card-bg: var(--color-background);
+  --card-border: 1px solid var(--color-border);
+  --card-shadow: var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-lg);
   --card-accent: transparent;
 
   position: relative;
@@ -20,12 +20,13 @@
     transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     border-color 0.2s ease;
-  border-left: 3px solid var(--card-accent);
+  border-left: 4px solid var(--card-accent);
 }
 
 .card:hover {
   box-shadow: var(--card-shadow-hover);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  border-left-width: 5px;
 }
 
 .card:hover .card-actions {
@@ -71,7 +72,7 @@
   margin: 0 0 8px 0;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--text-primary, #18181b);
+  color: var(--color-text);
   line-height: 1.35;
   word-break: break-word;
   white-space: pre-line;
@@ -81,7 +82,7 @@
 .card-description {
   margin: 0 0 10px 0;
   font-size: 0.8125rem;
-  color: var(--text-secondary, #52525b);
+  color: var(--color-text-secondary);
   line-height: 1.45;
   white-space: pre-line;
 }
@@ -102,22 +103,24 @@
   border-radius: 6px;
   font-size: 0.7rem;
   font-weight: 500;
-  color: var(--text-secondary, #52525b);
-  background: var(--gray-100, #f4f4f5);
+  color: var(--color-text-secondary);
+  background: var(--color-gray-100);
 }
 
 .meta-badge.due-date {
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .meta-badge.due-date.due-soon {
-  background: var(--warning-50, #fffbeb);
-  color: var(--warning-700, #d97706);
+  background: var(--color-warning-light);
+  opacity: 0.15;
+  color: var(--color-warning);
 }
 
 .meta-badge.due-date.overdue {
-  background: var(--error-50, #fef2f2);
-  color: var(--error-700, #dc2626);
+  background: var(--color-danger-light);
+  opacity: 0.15;
+  color: var(--color-danger);
 }
 
 .meta-badge.priority .priority-dot {
@@ -145,7 +148,7 @@
   justify-content: space-between;
   gap: 8px;
   padding-top: 10px;
-  border-top: 1px solid var(--border-color-light, #f4f4f5);
+  border-top: 1px solid var(--color-border);
 }
 
 .footer-stats {
@@ -158,13 +161,13 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--text-tertiary, #a1a1aa);
+  color: var(--color-text-light);
   font-size: 0.75rem;
 }
 
 .stat-count {
   font-weight: 600;
-  color: var(--text-secondary, #52525b);
+  color: var(--color-text-secondary);
 }
 
 /* Member avatars */
@@ -177,7 +180,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid #fff;
+  border: 2px solid var(--color-background);
   margin-left: -6px;
   display: flex;
   align-items: center;
@@ -185,8 +188,8 @@
   font-size: 0.65rem;
   font-weight: 600;
   color: #fff;
-  background: linear-gradient(135deg, var(--primary-500, #3b82f6), var(--primary-600, #2563eb));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  box-shadow: var(--shadow-sm);
 }
 
 .member-avatar:first-child {
@@ -197,15 +200,15 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid #fff;
+  border: 2px solid var(--color-background);
   margin-left: -6px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.6rem;
   font-weight: 600;
-  color: var(--text-secondary, #52525b);
-  background: var(--gray-200, #e4e4e7);
+  color: var(--color-text-secondary);
+  background: var(--color-gray-200);
 }
 
 /* ----- Quick actions ----- */
@@ -224,30 +227,32 @@
   height: 28px;
   border: none;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.95);
-  color: var(--text-secondary, #52525b);
+  background: var(--color-background);
+  opacity: 0.95;
+  color: var(--color-text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
   transition: background 0.15s, color 0.15s, transform 0.15s;
 }
 
 .action-btn:hover {
-  background: #fff;
-  color: var(--text-primary, #18181b);
+  background: var(--color-background);
+  opacity: 1;
+  color: var(--color-text);
   transform: scale(1.08);
 }
 
 .action-btn.action-delete:hover {
-  background: var(--error-500, #ef4444);
+  background: var(--color-danger);
   color: #fff;
 }
 
 /* ----- Drag preview ----- */
 .cdk-drag-preview .card {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-2xl);
   transform: rotate(1.5deg);
 }
 
@@ -271,4 +276,16 @@
     height: 22px;
     font-size: 0.6rem;
   }
+}
+
+/* ====== DARK MODE ====== */
+[data-theme="dark"] .card {
+  --card-bg: var(--color-background);
+  --card-border: 1px solid var(--color-border);
+  --card-shadow: var(--shadow-sm);
+  --card-shadow-hover: var(--shadow-lg);
+}
+
+[data-theme="dark"] .action-btn {
+  box-shadow: var(--shadow-sm);
 }
