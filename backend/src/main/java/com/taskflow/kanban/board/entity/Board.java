@@ -37,13 +37,27 @@ public class Board extends AuditableEntity {
     @Builder.Default
     private Set<BoardMember> members = new HashSet<>();
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<BoardColumn> columns = new HashSet<>();
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<Label> labels = new HashSet<>();
+
     private int position;
 
-    // Post-construct to ensure members is never null
+    // Post-construct to ensure collections are never null
     @PostLoad
-    private void ensureMembersInitialized() {
+    private void ensureCollectionsInitialized() {
         if (this.members == null) {
             this.members = new HashSet<>();
+        }
+        if (this.columns == null) {
+            this.columns = new HashSet<>();
+        }
+        if (this.labels == null) {
+            this.labels = new HashSet<>();
         }
     }
 }

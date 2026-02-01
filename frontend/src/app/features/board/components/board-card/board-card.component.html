@@ -2,7 +2,9 @@
   class="card" 
   [class.priority-high]="priorityClass === 'priority-high'" 
   [class.priority-medium]="priorityClass === 'priority-medium'"
-  [class.priority-low]="priorityClass === 'priority-low'">
+  [class.priority-low]="priorityClass === 'priority-low'"
+  [style.background-color]="getCardBackgroundColor()"
+  [style.border-left-color]="getCardBorderColor()">
   
   <!-- Labels -->
   @if (hasLabels) {

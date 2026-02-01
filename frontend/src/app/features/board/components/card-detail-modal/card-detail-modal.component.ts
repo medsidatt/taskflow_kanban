@@ -47,6 +47,10 @@ export class CardDetailModalComponent implements OnInit {
   boardLabels = signal<Label[]>([]);
   moveTargetColumnId = signal('');
   showLabelPicker = signal(false);
+  showCreateLabel = signal(false);
+  newLabelName = signal('');
+  newLabelColor = signal('#4A90E2');
+  creatingLabel = signal(false);
   showMemberSearch = signal(false);
   memberSearchQuery = signal('');
   memberSearchResults = signal<UserSummaryDto[]>([]);
@@ -229,6 +233,49 @@ export class CardDetailModalComponent implements OnInit {
       this.toast.error('Failed to remove label');
     }
   }
+
+  async createLabel(): Promise<void> {
+    const name = this.newLabelName().trim();
+    if (!name || !this.boardId || this.creatingLabel()) return;
+
+    this.creatingLabel.set(true);
+    try {
+      const newLabel = await this.labelService.createLabel({
+        name,
+        color: this.newLabelColor(),
+        boardId: this.boardId
+      }).toPromise();
+
+      if (newLabel) {
+        // Add the new label to the board labels list
+        this.boardLabels.update(labels => [...labels, newLabel]);
+        // Reset form
+        this.newLabelName.set('');
+        this.newLabelColor.set('#4A90E2');
+        this.showCreateLabel.set(false);
+        // Optionally add it to the card immediately
+        await this.addLabel(newLabel);
+        this.toast.success('Label created');
+      }
+    } catch {
+      this.toast.error('Failed to create label');
+    } finally {
+      this.creatingLabel.set(false);
+    }
+  }
+
+  cancelCreateLabel(): void {
+    this.showCreateLabel.set(false);
+    this.newLabelName.set('');
+    this.newLabelColor.set('#4A90E2');
+  }
+
+  // Predefined color options for quick selection
+  readonly labelColors = [
+    '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF',
+    '#FFA500', '#800080', '#FFC0CB', '#A52A2A', '#808080', '#000000',
+    '#4A90E2', '#50C878', '#FF6B6B', '#9B59B6', '#F39C12', '#1ABC9C'
+  ];
 
   async doMemberSearch(): Promise<void> {
     const q = this.memberSearchQuery().trim();

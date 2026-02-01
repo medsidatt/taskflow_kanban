@@ -51,7 +51,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: var(--sidebar-surface);
   border: 1px solid var(--sidebar-border);
   border-radius: 50%;
   color: var(--sidebar-text-muted);
@@ -122,6 +122,26 @@
   font-weight: 500;
   text-decoration: none;
   transition: background 150ms ease, color 150ms ease;
+  outline: none;
+}
+
+.sidebar-nav-item:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+button.sidebar-nav-item {
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+button.sidebar-nav-item:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .sidebar-nav-item:hover {
@@ -225,7 +245,7 @@
   left: 0;
   right: 0;
   max-height: min(70vh, 420px);
-  background: #fff;
+  background: var(--sidebar-surface);
   border: 1px solid var(--sidebar-border);
   border-radius: var(--sidebar-radius);
   box-shadow: var(--sidebar-shadow-lg);
@@ -446,13 +466,17 @@ button.sidebar-workspace-selector-dropdown-footer-link {
   border: none;
   background: none;
   font: inherit;
-  color: inherit;
+  color: var(--sidebar-accent);
   cursor: pointer;
   text-align: left;
 }
 
 .sidebar-workspace-selector-dropdown-footer-link svg {
   flex-shrink: 0;
+}
+
+.sidebar-workspace-selector-dropdown-footer-link span {
+  color: inherit;
 }
 
 /* --- Collapsed nav --- */
@@ -475,6 +499,25 @@ button.sidebar-workspace-selector-dropdown-footer-link {
   color: var(--sidebar-text-muted);
   text-decoration: none;
   transition: background 150ms ease, color 150ms ease;
+  outline: none;
+}
+
+.sidebar-collapsed-item:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+button.sidebar-collapsed-item {
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+button.sidebar-collapsed-item:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 .sidebar-collapsed-item:hover {

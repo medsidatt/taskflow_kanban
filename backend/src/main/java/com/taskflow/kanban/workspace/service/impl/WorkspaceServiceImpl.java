@@ -1,5 +1,6 @@
 package com.taskflow.kanban.workspace.service.impl;
 
+import com.taskflow.kanban.board.service.ActivityService;
 import com.taskflow.kanban.security.CustomUserDetails;
 import com.taskflow.kanban.user.entity.User;
 import com.taskflow.kanban.user.repository.UserRepository;
@@ -32,6 +33,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final UserRepository userRepository;
     private final WorkspaceMemberRepository workspaceMemberRepository;
+    private final ActivityService activityService;
 
     @Override
     public WorkspaceDto createWorkspace(WorkspaceCreateDto createDto) {
@@ -52,7 +54,13 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         
         workspace.getMembers().add(ownerMember);
         
-        return toDto(workspaceRepository.save(workspace));
+        Workspace savedWorkspace = workspaceRepository.save(workspace);
+        
+        activityService.logActivity(savedWorkspace.getId(), "Workspace", "CREATE", 
+            "Workspace '" + savedWorkspace.getName() + "' was created",
+            getCurrentUserId());
+        
+        return toDto(savedWorkspace);
     }
 
     @Override
@@ -92,13 +100,28 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         if (updateDto.getName() != null) workspace.setName(updateDto.getName());
         if (updateDto.getDescription() != null) workspace.setDescription(updateDto.getDescription());
         if (updateDto.getIsPrivate() != null) workspace.setPrivate(updateDto.getIsPrivate());
-        return toDto(workspaceRepository.save(workspace));
+        
+        Workspace updatedWorkspace = workspaceRepository.save(workspace);
+        
+        activityService.logActivity(id, "Workspace", "UPDATE", 
+            "Workspace '" + updatedWorkspace.getName() + "' was updated",
+            getCurrentUserId());
+        
+        return toDto(updatedWorkspace);
     }
 
     @Override
     public void deleteWorkspace(UUID id) {
         checkPermission(id, WorkspaceRole.OWNER);
-        workspaceRepository.delete(findWorkspace(id));
+        // Fetch workspace with all related entities to ensure proper cascade deletion
+        Workspace workspace = workspaceRepository.findByIdWithAllRelations(id)
+                .orElseThrow(() -> new EntityNotFoundException("Workspace not found"));
+        String workspaceName = workspace.getName();
+        workspaceRepository.delete(workspace);
+        
+        activityService.logActivity(id, "Workspace", "DELETE", 
+            "Workspace '" + workspaceName + "' was deleted",
+            getCurrentUserId());
     }
 
     @Override
@@ -132,23 +155,39 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         
         workspace.getMembers().add(newMember);
         workspaceRepository.save(workspace);
+        
+        activityService.logActivity(workspaceId, "Workspace", "MEMBER_ADD", 
+            "User '" + user.getUsername() + "' was added to workspace '" + workspace.getName() + "' as " + role,
+            getCurrentUserId());
     }
 
     @Override
     public void removeMember(UUID workspaceId, UUID userId) {
         checkPermission(workspaceId, WorkspaceRole.ADMIN);
         Workspace workspace = findWorkspace(workspaceId);
+        User removedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         workspace.getMembers().removeIf(member -> member.getUser().getId().equals(userId));
         workspaceRepository.save(workspace);
+        
+        activityService.logActivity(workspaceId, "Workspace", "MEMBER_REMOVE", 
+            "User '" + removedUser.getUsername() + "' was removed from workspace '" + workspace.getName() + "'",
+            getCurrentUserId());
     }
 
     @Override
     public void updateMemberRole(UUID workspaceId, UUID userId, WorkspaceRole role) {
         checkPermission(workspaceId, WorkspaceRole.ADMIN);
+        Workspace workspace = findWorkspace(workspaceId);
         WorkspaceMember member = workspaceMemberRepository.findByWorkspaceIdAndUserId(workspaceId, userId)
                 .orElseThrow(() -> new EntityNotFoundException("Workspace member not found"));
+        WorkspaceRole oldRole = member.getRole();
         member.setRole(role);
         workspaceMemberRepository.save(member);
+        
+        activityService.logActivity(workspaceId, "Workspace", "MEMBER_ROLE_UPDATE", 
+            "User '" + member.getUser().getUsername() + "' role changed from " + oldRole + " to " + role + " on workspace '" + workspace.getName() + "'",
+            getCurrentUserId());
     }
 
     private Workspace findWorkspace(UUID id) {

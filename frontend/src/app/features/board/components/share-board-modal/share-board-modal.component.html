@@ -1,0 +1,122 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="close()">
+    <div class="share-modal-container" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="share-modal-header">
+        <h2 class="share-modal-title">Share board</h2>
+        <button 
+          type="button" 
+          class="share-modal-close-btn" 
+          (click)="close()"
+          aria-label="Close modal">
+          <lucide-icon [name]="icons.X" [size]="20" />
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="share-modal-body">
+        @if (canManage()) {
+          <div class="share-add-section">
+            @if (!showAdd()) {
+              <button type="button" class="btn-primary" (click)="toggleAdd()">
+                <lucide-icon [name]="icons.UserPlus" [size]="18" />
+                <span>Add member</span>
+              </button>
+            } @else {
+              <div class="add-member-box">
+                <input
+                  type="text"
+                  class="add-member-input"
+                  placeholder="Search by username or email..."
+                  [value]="addSearch()"
+                  (input)="onAddSearchInput($any($event.target).value)"
+                  autofocus />
+                @if (addSearching()) {
+                  <p class="add-member-loading">Searching...</p>
+                }
+                @if (addSearch() && !addSearching() && addSearchResults().length === 0) {
+                  <p class="add-member-empty">No users found or all are already members</p>
+                }
+                @if (addSearchResults().length > 0) {
+                  <ul class="add-member-list">
+                    @for (u of addSearchResults(); track u.id) {
+                      <li class="add-member-item">
+                        <div class="add-member-item-info">
+                          <app-user-avatar [name]="u.username || u.email || 'User'" size="sm" />
+                          <div>
+                            <span class="add-member-username">{{ u.username }}</span>
+                            <span class="add-member-email">{{ u.email }}</span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="btn-add-invite"
+                          (click)="addMember(u)"
+                          [disabled]="addingUserId() === u.id">
+                          {{ addingUserId() === u.id ? 'Adding...' : 'Add' }}
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        @if (loading()) {
+          <div class="members-loading">Loading members...</div>
+        } @else {
+          <div class="members-list">
+            @for (m of members(); track m.userId) {
+              <div class="member-row">
+                <app-user-avatar [name]="m.username || m.email || 'User'" size="md" />
+                <div class="member-info">
+                  <span class="member-name">{{ m.username || m.email || 'Unknown' }}</span>
+                  @if (m.email && m.username) {
+                    <span class="member-email">{{ m.email }}</span>
+                  }
+                </div>
+                <div class="member-role">
+                  @if (canManage() && m.role !== 'OWNER') {
+                    <select
+                      class="role-select"
+                      [ngModel]="m.role"
+                      (ngModelChange)="changeRole(m, $event)">
+                      @for (r of roles; track r) {
+                        @if (r !== 'OWNER') {
+                          <option [value]="r">{{ roleLabel(r) }}</option>
+                        }
+                      }
+                    </select>
+                  } @else {
+                    <span class="role-badge">{{ m.role }}</span>
+                  }
+                </div>
+                @if (canManage() && m.role !== 'OWNER') {
+                  <button
+                    type="button"
+                    class="btn-remove"
+                    (click)="removeMember(m)"
+                    title="Remove member">
+                    <lucide-icon [name]="icons.Trash2" [size]="16" />
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          @if (members().length === 0 && !loading()) {
+            <div class="members-empty">
+              <lucide-icon [name]="icons.Users" [size]="48" class="empty-icon" />
+              <p>No members yet</p>
+              @if (canManage()) {
+                <button type="button" class="btn-primary" (click)="toggleAdd()">Add member</button>
+              }
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+}

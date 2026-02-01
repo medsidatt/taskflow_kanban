@@ -11,6 +11,7 @@ export interface Card {
   dueDate?: string; // ISO 8601 string
   startDate?: string; // ISO 8601 string
   priority?: number; // 1 = highest, 2, 3, etc.
+  color?: string; // Hex color code for card
   columnId: string; // UUID
   members?: CardMember[];
   labels?: Label[];
@@ -29,6 +30,7 @@ export interface CardCreateDto {
   dueDate?: string;
   startDate?: string;
   priority?: number;
+  color?: string;
 }
 
 export interface CardUpdateDto {
@@ -37,6 +39,7 @@ export interface CardUpdateDto {
   dueDate?: string;
   startDate?: string;
   priority?: number;
+  color?: string;
   archived?: boolean;
   achieved?: boolean;
   /** When true, clears dueDate on the server. */

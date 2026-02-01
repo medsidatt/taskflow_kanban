@@ -64,14 +64,22 @@ import { CreateWorkspaceModalComponent, CreateWorkspaceData } from '../../compon
   `,
   styles: [`
     .workspace-list-page { padding: 2rem; max-width: 1200px; margin: 0 auto; }
-    .page-header { display: flex; justify-content: space-between; margin-bottom: 2rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 1rem; }
+    .page-title { font-size: 1.875rem; font-weight: 700; color: var(--color-text); margin: 0; }
     .workspaces-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-    .workspace-card { padding: 2rem; background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.2s; }
-    .workspace-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); transform: translateY(-4px); }
-    .workspace-icon { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #2196f3, #1976d2); color: white; font-size: 1.5rem; font-weight: 600; border-radius: 0.75rem; margin-bottom: 1rem; }
-    .workspace-name { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .workspace-description { font-size: 0.875rem; color: #757575; margin-bottom: 1rem; }
+    .workspace-card { padding: 2rem; background: var(--color-background); border: 1px solid var(--color-border); border-radius: 0.75rem; box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.2s; }
+    .workspace-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); border-color: var(--color-border-dark); }
+    .workspace-icon { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); color: white; font-size: 1.5rem; font-weight: 600; border-radius: 0.75rem; margin-bottom: 1rem; }
+    .workspace-name { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-text); }
+    .workspace-description { font-size: 0.875rem; color: var(--color-text-secondary); margin-bottom: 1rem; }
     .workspace-meta { display: flex; gap: 0.5rem; }
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600; border-radius: 0.375rem; }
+    .badge-primary { background: rgba(59, 130, 246, 0.1); color: var(--color-primary, #3b82f6); border: 1px solid rgba(59, 130, 246, 0.2); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--color-warning, #f59e0b); border: 1px solid rgba(245, 158, 11, 0.3); }
+    [data-theme="dark"] .badge-primary { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: rgba(59, 130, 246, 0.4); }
+    [data-theme="dark"] .badge-warning { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; color: #fff; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); border: none; border-radius: 0.5rem; cursor: pointer; transition: opacity 0.2s; }
+    .btn-primary:hover:not(:disabled) { opacity: 0.9; }
   `]
 })
 export class WorkspaceListComponent implements OnInit {

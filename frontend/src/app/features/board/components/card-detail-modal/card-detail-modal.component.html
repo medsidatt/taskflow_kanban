@@ -233,20 +233,66 @@
           </button>
           @if (showLabelPicker()) {
             <div class="label-picker">
-              @for (l of boardLabels(); track l.id) {
-                @if (!hasLabelOnCard(l.id)) {
-                  <button
-                    type="button"
-                    class="label-picker-item"
-                    [style.background-color]="l.color"
-                    [disabled]="addingLabelId() === l.id"
-                    (click)="addLabel(l)">
-                    {{ l.name }}
-                  </button>
+              @if (showCreateLabel()) {
+                <div class="create-label-form">
+                  <input
+                    type="text"
+                    class="create-label-input"
+                    placeholder="Label name"
+                    [value]="newLabelName()"
+                    (input)="newLabelName.set($any($event.target).value)"
+                    (keyup.enter)="createLabel()"
+                    autofocus />
+                  <div class="color-picker">
+                    @for (color of labelColors; track color) {
+                      <button
+                        type="button"
+                        class="color-option"
+                        [class.selected]="newLabelColor() === color"
+                        [style.background-color]="color"
+                        (click)="newLabelColor.set(color)"
+                        [title]="color">
+                      </button>
+                    }
+                  </div>
+                  <div class="create-label-actions">
+                    <button
+                      type="button"
+                      class="btn-primary btn-sm"
+                      (click)="createLabel()"
+                      [disabled]="!newLabelName().trim() || creatingLabel()">
+                      Create
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-ghost btn-sm"
+                      (click)="cancelCreateLabel()">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                @for (l of boardLabels(); track l.id) {
+                  @if (!hasLabelOnCard(l.id)) {
+                    <button
+                      type="button"
+                      class="label-picker-item"
+                      [style.background-color]="l.color"
+                      [disabled]="addingLabelId() === l.id"
+                      (click)="addLabel(l)">
+                      {{ l.name }}
+                    </button>
+                  }
                 }
-              }
-              @if (boardLabels().length === 0 || allLabelsOnCard()) {
-                <p class="label-picker-empty">No labels to add</p>
+                @if (boardLabels().length === 0 || allLabelsOnCard()) {
+                  <p class="label-picker-empty">No labels to add</p>
+                }
+                <button
+                  type="button"
+                  class="label-picker-create-btn"
+                  (click)="showCreateLabel.set(true)">
+                  + Create new label
+                </button>
               }
             </div>
           }

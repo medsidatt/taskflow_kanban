@@ -18,6 +18,7 @@ import { UserAvatarComponent } from '../../../../shared/components/user-avatar/u
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { CardDetailModalComponent } from '../../components/card-detail-modal/card-detail-modal.component';
 import { EditBoardModalComponent } from '../../components/edit-board-modal/edit-board-modal.component';
+import { ShareBoardModalComponent } from '../../components/share-board-modal/share-board-modal.component';
 
 @Component({
   selector: 'app-board-view',
@@ -30,7 +31,8 @@ import { EditBoardModalComponent } from '../../components/edit-board-modal/edit-
     UserAvatarComponent,
     ModalComponent,
     CardDetailModalComponent,
-    EditBoardModalComponent
+    EditBoardModalComponent,
+    ShareBoardModalComponent
   ],
   templateUrl: './board-view.component.html',
   styleUrls: ['./board-view.component.css']
@@ -40,6 +42,7 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   readonly icons = { Plus, MoreVertical, X, Edit2, Trash2, Users, Tag, Calendar, Lock, Unlock, Archive, ArchiveRestore, CheckCircle, Circle, GripVertical };
 
   @ViewChild(EditBoardModalComponent) editBoardModal!: EditBoardModalComponent;
+  @ViewChild(ShareBoardModalComponent) shareBoardModal!: ShareBoardModalComponent;
 
   private refreshInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -183,6 +186,12 @@ export class BoardViewComponent implements OnInit, OnDestroy {
 
   onBoardEditSaved(updated: Board): void {
     this.board.set(updated);
+  }
+
+  openShareBoard(): void {
+    const b = this.board();
+    if (!b) return;
+    this.shareBoardModal.open(b);
   }
 
   openArchivedModal(): void {

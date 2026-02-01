@@ -78,6 +78,36 @@ export class BoardCardComponent {
     return '';
   }
 
+  /**
+   * Get card background color (lighter version of card color)
+   */
+  getCardBackgroundColor(): string {
+    if (this.card.color) {
+      return this.hexToRgba(this.card.color, 0.05);
+    }
+    return 'transparent';
+  }
+
+  /**
+   * Get card border color (darker accent line for the card)
+   */
+  getCardBorderColor(): string {
+    if (this.card.color) {
+      return this.card.color;
+    }
+    return 'transparent';
+  }
+
+  /**
+   * Convert hex color to rgba with transparency
+   */
+  private hexToRgba(hex: string, alpha: number): string {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
   onCardClick(event: MouseEvent): void {
     event.stopPropagation();
     // Card click handled by parent component

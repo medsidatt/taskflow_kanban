@@ -3,6 +3,7 @@ package com.taskflow.kanban.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.taskflow.kanban.security.CustomUserDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 
 /**
@@ -39,15 +41,22 @@ public class AppConfig {
      * Automatically sets createdBy and modifiedBy fields
      */
     @Bean
-    public AuditorAware<String> auditorProvider() {
+    public AuditorAware<UUID> auditorProvider() {
         return () -> {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             
             if (authentication == null || !authentication.isAuthenticated()) {
-                return Optional.of("system");
+                // Return null for system operations - JPA will handle null appropriately
+                return Optional.empty();
             }
             
-            return Optional.of(authentication.getName());
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof CustomUserDetails) {
+                return Optional.of(((CustomUserDetails) principal).getId());
+            }
+            
+            // Fallback: if principal is not CustomUserDetails, return empty
+            return Optional.empty();
         };
     }
 
