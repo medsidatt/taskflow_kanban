@@ -59,6 +59,8 @@ curl http://localhost:8080/api/actuator/health
 - **Backend API:** http://localhost:8080/api
 - **Swagger:** http://localhost:8080/api/swagger-ui.html
 
+**Fresh database:** If you created a new volume (or removed the old one), the database has no users. Use **Sign up** on the app first to create an account, then log in. "Unauthorized. Please login again." after a fresh volume usually means no user exists yet—register first.
+
 ## 7. Stop and Remove Containers
 
 ```cmd
@@ -79,6 +81,11 @@ docker volume rm taskflow-postgres-data
 | taskflow-postgres-data | PostgreSQL data persistence |
 
 ## Troubleshooting
+
+**"Unauthorized. Please login again." (login or sign up):**  
+- With a **fresh volume** the database is empty—use **Sign up** first, then log in.  
+- If sign up also shows this, an old token in the browser may be sent. Clear site data for http://localhost:4200 (DevTools → Application → Storage → Clear site data) or use a private/incognito window, then try **Sign up** again.  
+- The backend was updated so public auth paths (login, register) ignore invalid tokens; rebuild/pull the latest backend image if you run your own build.
 
 **Password authentication failed:** Ensure Postgres and backend use the same `POSTGRES_USER` and `POSTGRES_PASSWORD`. If you changed credentials, remove the volume and start fresh: `docker volume rm taskflow-postgres-data`.
 

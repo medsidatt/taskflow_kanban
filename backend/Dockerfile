@@ -9,6 +9,10 @@ RUN mvn clean package -DskipTests
 # -------- Runtime stage --------
 FROM eclipse-temurin:21-jre
 
+# Install curl for Docker healthcheck (compose depends_on: service_healthy)
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Create non-root user
 RUN useradd -ms /bin/bash taskflow
 
