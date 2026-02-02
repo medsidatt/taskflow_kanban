@@ -18,11 +18,12 @@ public class WebConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Allow specific origins (configure based on environment)
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:4200",
-                "http://localhost:80",
-                "http://frontend:80"
+        // Allow specific origins and patterns (Docker: frontend proxy or direct access)
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "http://frontend:80",
+                "http://frontend"
         ));
         
         // Allow common HTTP methods

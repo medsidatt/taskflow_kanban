@@ -16,17 +16,17 @@ if (-not (Test-Path .env)) {
     Write-Host "Creating .env file from template..." -ForegroundColor Yellow
     
     @"
-# Database Configuration
-POSTGRES_DB=taskflow_db
-POSTGRES_USER=taskflow_user
-POSTGRES_PASSWORD=change_me_password
+# Database Configuration (must match between Postgres and Backend)
+POSTGRES_DB=taskflow
+POSTGRES_USER=taskflow
+POSTGRES_PASSWORD=YourSecurePassword123!
 
 # JWT Configuration
-JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+JWT_SECRET=mySecretKeyForTaskFlowKanban2024!
 JWT_EXPIRATION=86400000
 
-# Spring Profile
-SPRING_PROFILES_ACTIVE=docker
+# Optional
+SPRING_JPA_SHOW_SQL=false
 "@ | Out-File -FilePath .env -Encoding utf8
     
     Write-Host "✅ Created .env file. Please update the values!" -ForegroundColor Yellow
