@@ -108,3 +108,27 @@ docker compose up -d
 **Frontend cannot reach backend:**
 - Verify all services on `taskflow-network`: `docker network inspect taskflow-taskflow-network`
 - Check backend health: `curl http://localhost:8080/api/actuator/health`
+
+**Login or Register fails / "Can't login and register":**
+
+1. **Check browser DevTools** (F12 → Network tab): What is the HTTP status? 502, 504, 500, 404?
+
+2. **Verify backend is reachable:**
+   ```cmd
+   curl http://localhost:8080/api/actuator/health
+   ```
+   Should return `{"status":"UP"}`.
+
+3. **Test auth API directly:**
+   ```cmd
+   curl -X POST http://localhost:8080/api/auth/register -H "Content-Type: application/json" -d "{\"username\":\"testuser\",\"email\":\"test@example.com\",\"password\":\"password123\"}"
+   ```
+
+4. **Check backend logs** for errors:
+   ```cmd
+   docker compose logs backend
+   ```
+
+5. **Ensure frontend proxies to backend:** Use **http://localhost:4200** (not 8080) to access the app. The frontend nginx proxies `/api` to the backend.
+
+6. **If using manual docker run:** Backend container must be named `backend` and all containers on the same network. See `docs/DOCKER_RUN_MANUAL.md`.
