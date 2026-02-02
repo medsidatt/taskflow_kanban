@@ -1,11 +1,31 @@
 # TaskFlow Kanban - Manual Build and Run with Docker
 
-Build Docker images from source and run them locally (without pulling from Docker Hub).
+Build Docker images from source, run the stack locally, then push to Docker Hub when ready.
+
+## One script: build, run, then push
+
+From the project root (PowerShell):
+
+```powershell
+.\build-run-then-push.ps1
+```
+
+This script will:
+
+1. Create `.env` from a template if missing
+2. Build backend and frontend images
+3. Start Postgres, backend, and frontend with Docker Compose
+4. Wait for the backend to be ready
+5. Print service URLs and the exact `docker tag` / `docker push` commands to use when you are ready to push
+
+Set `$env:DOCKERHUB_USERNAME` before running if your Docker Hub username is not `medsidatt`.
+
+---
 
 ## Prerequisites
 
 - Docker installed
-- `.env` file with required variables (see Step 1)
+- `.env` file with required variables (see Step 1), or let the script create it
 
 ---
 
@@ -101,6 +121,22 @@ docker run -d --name taskflow-frontend --network taskflow-network -p 4200:80 tas
 
 ---
 
+## 6. Push to Docker Hub (after testing)
+
+When the stack is running and you have tested it, tag and push:
+
+```cmd
+docker login
+docker tag taskflow-backend:latest   <YOUR_DOCKERHUB_USER>/taskflow-backend:latest
+docker tag taskflow-frontend:latest <YOUR_DOCKERHUB_USER>/taskflow-frontend:latest
+docker push <YOUR_DOCKERHUB_USER>/taskflow-backend:latest
+docker push <YOUR_DOCKERHUB_USER>/taskflow-frontend:latest
+```
+
+Replace `<YOUR_DOCKERHUB_USER>` with your Docker Hub username (e.g. `medsidatt`). The script `build-run-then-push.ps1` prints these commands with your username.
+
+---
+
 ## 7. Quick Reference
 
 **One command (build + run):**
@@ -108,7 +144,7 @@ docker run -d --name taskflow-frontend --network taskflow-network -p 4200:80 tas
 docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 ```
 
-**Stop:**
+**Stop (when using build override):**
 ```cmd
-docker compose down
+docker compose -f docker-compose.yml -f docker-compose.build.yml down
 ```

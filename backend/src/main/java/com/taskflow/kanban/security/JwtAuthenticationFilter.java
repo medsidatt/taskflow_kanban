@@ -51,11 +51,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .collect(Collectors.toList());
     }
 
+    /** Paths that are always public; never return 401 for invalid/expired token here (let controller handle). */
+    private static boolean isPublicAuthPath(String path) {
+        if (path == null) return false;
+        if (!path.contains("/auth/")) return false;
+        return path.endsWith("/login") || path.endsWith("/register") || path.endsWith("/refresh")
+                || path.contains("/verify") || path.contains("/forgot-password") || path.contains("/reset-password");
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+        if (isPublicAuthPath(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String authHeader = request.getHeader("Authorization");
 
