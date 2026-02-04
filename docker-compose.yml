@@ -28,7 +28,10 @@ services:
       retries: 5
 
   backend:
-    image: medsidatt/taskflow-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: taskflow-backend:latest
     container_name: taskflow-backend
     restart: always
     depends_on:
@@ -55,7 +58,10 @@ services:
       start_period: 40s
 
   frontend:
-    image: medsidatt/taskflow-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: taskflow-frontend:latest
     container_name: taskflow-frontend
     restart: always
     depends_on:

@@ -146,3 +146,5 @@ docker compose up -d
 6. **Ensure frontend proxies to backend:** Use **http://localhost:4200** (not 8080) to access the app. The frontend nginx proxies `/api` to the backend.
 
 7. **If using manual docker run:** Backend container must be named `backend` and all containers on the same network. See `docs/DOCKER_RUN_MANUAL.md`.
+
+**For comprehensive debugging when running from different directories, see `docs/DOCKER_DEBUG.md` or run `.\debug-docker.ps1` from your run directory.**
