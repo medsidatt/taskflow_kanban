@@ -1,0 +1,26 @@
+# Runtime stage only - uses pre-built JAR
+FROM eclipse-temurin:21-jre
+
+# Install curl for Docker healthcheck (compose depends_on: service_healthy)
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -ms /bin/bash taskflow
+
+WORKDIR /app
+
+# Copy pre-built jar from local build (copied to root to avoid .dockerignore)
+COPY app.jar app.jar
+
+# Change ownership
+RUN chown -R taskflow:taskflow /app
+
+# Switch to non-root user
+USER taskflow
+
+EXPOSE 8080
+
+ENTRYPOINT ["java","-jar","app.jar"]
+
+ENV SPRING_PROFILES_ACTIVE=docker

@@ -50,10 +50,12 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/openapi.yaml").permitAll() // Allow access to OpenAPI definition
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/api-docs.yaml/**").permitAll() // Allow Swagger UI
+                        .requestMatchers("/auth/**", "/api/auth/**").permitAll()
+                        .requestMatchers("/actuator/**", "/api/actuator/**").permitAll()
+                        .requestMatchers("/error", "/api/error").permitAll() // So error responses are not blocked with 403
+                        .requestMatchers("/openapi.yaml", "/api/openapi.yaml").permitAll() // Allow access to OpenAPI definition
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/api-docs.yaml/**",
+                                "/api/swagger-ui/**", "/api/swagger-ui.html", "/api/api-docs/**", "/api/api-docs.yaml/**").permitAll() // Allow Swagger UI
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
