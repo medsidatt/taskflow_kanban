@@ -9,11 +9,11 @@ import { LoadingService } from '../services/loading.service';
  */
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const loadingService = inject(LoadingService);
-  
+
   // Skip loading for certain endpoints
-  const skipLoading = req.url.includes('/health') || 
+  const skipLoading = req.url.includes('/health') ||
                       req.url.includes('/actuator') ||
-                      req.headers.has('X-Skip-Loading');
+                      req.headers.has('X-Skip-Loading') || req.url.includes('/tests');
 
   if (!skipLoading) {
     loadingService.show();

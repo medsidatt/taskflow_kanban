@@ -55,7 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/error", "/api/error").permitAll() // So error responses are not blocked with 403
                         .requestMatchers("/openapi.yaml", "/api/openapi.yaml").permitAll() // Allow access to OpenAPI definition
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/api-docs.yaml/**",
-                                "/api/swagger-ui/**", "/api/swagger-ui.html", "/api/api-docs/**", "/api/api-docs.yaml/**").permitAll() // Allow Swagger UI
+                                "/api/swagger-ui/**", "/api/swagger-ui.html", "/api/api-docs/**", "/api/api-docs.yaml/**", "/api/tests").permitAll() // Allow Swagger UI
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

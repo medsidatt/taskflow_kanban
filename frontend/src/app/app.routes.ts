@@ -9,7 +9,7 @@ export const routes: Routes = [
     redirectTo: '/boards',
     pathMatch: 'full'
   },
-  
+
   // Auth routes (no layout)
   {
     path: 'login',
@@ -19,7 +19,7 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./features/auth/pages/register/register.component').then(m => m.RegisterComponent)
   },
-  
+
   // Protected routes with main layout
   {
     path: '',
@@ -101,7 +101,11 @@ export const routes: Routes = [
       }
     ]
   },
-  
+  {
+    path: 'tests',
+    loadComponent: () => import('./features/test/test.component').then(m => m.TestComponent)
+  },
+
   // Wildcard route
   {
     path: '**',
