@@ -68,11 +68,16 @@
           <div class="members-loading">Loading members...</div>
         } @else {
           <div class="members-list">
-            @for (m of members(); track m.userId) {
+            @for (m of sortedMembers(); track m.userId) {
               <div class="member-row">
                 <app-user-avatar [name]="m.username || m.email || 'User'" size="md" />
                 <div class="member-info">
-                  <span class="member-name">{{ m.username || m.email || 'Unknown' }}</span>
+                  <span class="member-name">
+                    {{ m.username || m.email || 'Unknown' }}
+                    @if (m.userId === currentUserId()) {
+                      <span class="you-badge">(You)</span>
+                    }
+                  </span>
                   @if (m.email && m.username) {
                     <span class="member-email">{{ m.email }}</span>
                   }

@@ -4,19 +4,30 @@
 
 | Fichier | Description |
 |---------|-------------|
-| `taskflow-login.png` | Page de connexion (Sign In) |
-| `taskflow-register.png` | Page d'inscription (Create Account) |
-| `taskflow-login-forbidden.png` | Page de connexion après tentative (erreur Forbidden dans ce contexte) |
+| `01-login-page.png` | Page de connexion (Sign In) |
+| `02-register-page.png` | Page d'inscription (Create Account) |
+| `03-boards-empty.png` | Liste des boards (vide, après connexion) |
+| `04-workspaces-empty.png` | Liste des workspaces (vide) |
+| `05-create-workspace-modal.png` | Modal de création de workspace |
+| `06-workspace-detail.png` | Détail d'un workspace |
+| `07-create-board-modal.png` | Modal de création de board |
+| `08-board-empty.png` | Tableau Kanban vide |
+| `09-kanban-board-with-card.png` | Tableau Kanban avec colonnes et carte |
+| `10-settings-page.png` | Page des paramètres |
+| `11-activity-page.png` | Page d'activité (journal des actions) |
+| `12-user-dropdown-menu.png` | Menu utilisateur (dropdown) |
+| `13-profile-page.png` | Page de profil utilisateur |
 
 ## Tests exécutés
 
 - **Backend** : `mvn test` — OK
 - **Frontend** : `npm test -- --watch=false --browsers=ChromeHeadless` — 3 tests OK
 
-## Captures dashboard / board
+## Fonctionnalités démontrées
 
-Pour obtenir des captures une fois connecté (dashboard, tableaux Kanban) :
-1. Démarrer l’app complète : `docker-compose up -d` (Docker Desktop démarré)
-2. Ouvrir http://localhost:4200 dans un navigateur
-3. S’inscrire ou se connecter puis naviguer vers Dashboard / Workspaces / Board
-4. Prendre les captures (Win+Shift+S ou outil de capture)
+- Authentification (inscription, connexion)
+- Workspaces (création, liste, détail)
+- Boards (création, colonnes, cartes)
+- Paramètres (thème, notifications)
+- Profil utilisateur
+- Journal d'activité

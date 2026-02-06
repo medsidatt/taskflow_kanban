@@ -243,45 +243,7 @@ export interface CreateWorkspaceData {
       justify-content: flex-end;
     }
 
-    .btn {
-      padding: 0.625rem 1.25rem;
-      font-size: var(--text-sm, 0.875rem);
-      font-weight: var(--font-semibold, 600);
-      border-radius: var(--radius-lg, 0.5rem);
-      border: none;
-      cursor: pointer;
-      transition: all var(--transition-fast, 150ms);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-secondary {
-      background-color: var(--color-background, white);
-      color: var(--color-text, #18181b);
-      border: 2px solid var(--color-border, #e5e7eb);
-    }
-
-    .btn-secondary:hover {
-      background-color: var(--color-gray-50, #fafafa);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--color-primary, #3b82f6), var(--color-primary-600, #2563eb));
-      color: white;
-      box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
-      transform: translateY(-1px);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
+    /* Buttons use global .btn, .btn-primary, .btn-secondary classes from styles.css */
 
     .spinner {
       display: inline-block;

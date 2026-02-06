@@ -9,9 +9,11 @@ import { ColumnService } from '../../../../core/services/column.service';
 import { CardService } from '../../../../core/services/card.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { AuthService } from '../../../auth/services/auth.service';
 import { Board } from '../../../../core/models/board.model';
 import { BoardColumn } from '../../../../core/models/board-column.model';
 import { Card } from '../../../../core/models/card.model';
+import { BoardRole } from '../../../../core/models/board-member.model';
 import { forkJoin } from 'rxjs';
 import { normalizeToSingleLine } from '../../../../core/utils/text.utils';
 import { UserAvatarComponent } from '../../../../shared/components/user-avatar/user-avatar.component';
@@ -72,6 +74,41 @@ export class BoardViewComponent implements OnInit, OnDestroy {
   columnsActive = computed(() => (this.columns() || []).filter(c => !c.archived));
   columnsArchived = computed(() => (this.columns() || []).filter(c => c.archived));
 
+  // Role-based permissions
+  myRole = computed<BoardRole | null>(() => {
+    const user = this.authService.getCurrentUser();
+    const members = this.board()?.members || [];
+    const me = members.find(m => m.userId === user?.id);
+    return me?.role ?? null;
+  });
+
+  canEditBoard = computed(() => {
+    const role = this.myRole();
+    return role === 'OWNER' || role === 'ADMIN';
+  });
+
+  canManageColumns = computed(() => {
+    const role = this.myRole();
+    return role === 'OWNER' || role === 'ADMIN' || role === 'MEMBER';
+  });
+
+  canDeleteColumn = computed(() => {
+    const role = this.myRole();
+    return role === 'OWNER' || role === 'ADMIN';
+  });
+
+  canCreateCard = computed(() => {
+    const role = this.myRole();
+    return role === 'OWNER' || role === 'ADMIN' || role === 'MEMBER';
+  });
+
+  canEditCard = computed(() => {
+    const role = this.myRole();
+    return role === 'OWNER' || role === 'ADMIN' || role === 'MEMBER';
+  });
+
+  isViewer = computed(() => this.myRole() === 'VIEWER');
+
   constructor(
     private route: ActivatedRoute,
     public router: Router,
@@ -79,7 +116,8 @@ export class BoardViewComponent implements OnInit, OnDestroy {
     private columnService: ColumnService,
     private cardService: CardService,
     private confirm: ConfirmService,
-    private toast: ToastService
+    private toast: ToastService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {

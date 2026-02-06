@@ -278,68 +278,7 @@
   color: var(--color-text);
 }
 
-/* ====== BUTTONS ====== */
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  border: 2px solid transparent;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.btn:focus {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-block {
-  width: 100%;
-}
-
-.btn-lg {
-  padding: var(--spacing-4) var(--spacing-6);
-  font-size: var(--text-base);
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #5e72e4 0%, #825ee4 100%);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #4a5ec9 0%, #6d46c6 100%);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-
-.btn-outline {
-  background: transparent;
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
-.btn-outline:hover:not(:disabled) {
-  background: var(--color-background-secondary);
-  border-color: var(--color-border-light);
-}
-
-.gap-2 {
-  gap: var(--spacing-2);
-}
+/* ====== LOADING SPINNER ====== */
 
 .spinner-mini {
   display: inline-block;

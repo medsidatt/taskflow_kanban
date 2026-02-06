@@ -60,6 +60,14 @@
   background: var(--gray-100, #f4f4f5);
 }
 
+.modal-title-readonly {
+  cursor: default;
+}
+
+.modal-title-readonly:hover {
+  background: transparent;
+}
+
 .modal-title-input {
   width: 100%;
   font-size: var(--text-2xl, 1.5rem);
@@ -152,6 +160,15 @@
 .description-content:hover {
   background: var(--gray-100, #f4f4f5);
   border-color: var(--border-color, #e4e4e7);
+}
+
+.description-content-readonly {
+  cursor: default;
+}
+
+.description-content-readonly:hover {
+  background: var(--gray-50, #fafafa);
+  border-color: var(--border-color-light, #f4f4f5);
 }
 
 .description-content p {
@@ -375,6 +392,22 @@
 .sidebar-btn.danger:hover {
   background: var(--error-50, #fef2f2);
   color: var(--error-700, #dc2626);
+}
+
+.sidebar-status-readonly {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #52525b);
+}
+
+.sidebar-empty-text {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #52525b);
+  margin: 0;
+  padding: var(--spacing-1) 0;
 }
 
 /* Due date edit */

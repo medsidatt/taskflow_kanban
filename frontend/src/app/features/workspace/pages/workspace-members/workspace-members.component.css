@@ -20,23 +20,7 @@
   margin: 0 0 1rem 0;
 }
 
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, var(--primary-500, #3b82f6), var(--primary-600, #2563eb));
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
-.btn-primary:hover:not(:disabled) {
-  opacity: 0.95;
-}
+/* Buttons use global .btn, .btn-primary classes from styles.css */
 
 .add-member-box {
   background: var(--color-gray-100);
@@ -173,6 +157,12 @@
   font-weight: 600;
   font-size: 0.9375rem;
   color: var(--color-text);
+}
+
+.you-badge {
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-left: 4px;
 }
 
 .member-email {

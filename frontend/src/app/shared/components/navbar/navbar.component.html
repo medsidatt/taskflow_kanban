@@ -59,37 +59,46 @@
           [attr.aria-expanded]="showNotificationsDropdown()"
           title="Notifications">
           <lucide-icon [name]="icons.Bell" [size]="20" />
-          <span class="navbar-badge">3</span>
+          @if (unreadCount() > 0) {
+            <span class="navbar-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+          }
         </button>
 
         @if (showNotificationsDropdown()) {
           <div class="dropdown-menu navbar-dropdown navbar-dropdown-wide" (click)="$event.stopPropagation()">
             <div class="dropdown-header">
               <span class="text-sm font-semibold">Notifications</span>
+              @if (unreadCount() > 0) {
+                <button 
+                  class="mark-all-read-btn" 
+                  (click)="markAllNotificationsAsRead()"
+                  title="Mark all as read">
+                  <lucide-icon [name]="icons.Check" [size]="14" />
+                </button>
+              }
             </div>
-            <div class="notification-item">
-              <div class="notification-content">
-                <p class="notification-title">Card assigned to you</p>
-                <p class="notification-description">John assigned you to "Update homepage design"</p>
-                <p class="notification-time">2 hours ago</p>
+            @if (notifications().length === 0) {
+              <div class="notification-empty">
+                <p>No notifications yet</p>
               </div>
-            </div>
-            <div class="notification-item">
-              <div class="notification-content">
-                <p class="notification-title">Comment on your card</p>
-                <p class="notification-description">Sarah commented on "Fix login bug"</p>
-                <p class="notification-time">5 hours ago</p>
-              </div>
-            </div>
-            <div class="notification-item">
-              <div class="notification-content">
-                <p class="notification-title">Board updated</p>
-                <p class="notification-description">Sprint Planning board was updated</p>
-                <p class="notification-time">1 day ago</p>
-              </div>
-            </div>
+            } @else {
+              @for (notification of notifications(); track notification.id) {
+                <div 
+                  class="notification-item" 
+                  [class.unread]="!notification.isRead"
+                  (click)="onNotificationClick(notification)">
+                  <div class="notification-content">
+                    <p class="notification-title">{{ notification.title }}</p>
+                    @if (notification.message) {
+                      <p class="notification-description">{{ notification.message }}</p>
+                    }
+                    <p class="notification-time">{{ notification.createdAt | relativeTime }}</p>
+                  </div>
+                </div>
+              }
+            }
             <div class="dropdown-divider"></div>
-            <button class="dropdown-item text-center">
+            <button class="dropdown-item text-center" routerLink="/notifications">
               <span>View all notifications</span>
             </button>
           </div>

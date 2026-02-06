@@ -130,28 +130,7 @@
   gap: 0.375rem;
 }
 
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, var(--primary-500, #3b82f6), var(--primary-600, #2563eb));
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
-.btn-primary:hover:not(:disabled) {
-  opacity: 0.95;
-}
-
-.btn-primary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
+/* Buttons use global .btn, .btn-primary classes from styles.css */
 
 /* Danger zone */
 .danger-zone .section-title {

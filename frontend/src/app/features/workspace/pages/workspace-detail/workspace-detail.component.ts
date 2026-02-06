@@ -75,8 +75,7 @@ import { CreateBoardModalComponent, CreateBoardData } from '../../../board/compo
     .workspace-detail-page { padding: var(--spacing-6, 1.5rem); max-width: 1200px; }
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-6, 1.5rem); }
     .page-title { margin: 0; font-size: var(--text-2xl, 1.5rem); font-weight: 600; color: var(--text-primary, #18181b); }
-    .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; color: #fff; background: linear-gradient(135deg, var(--primary-500, #3b82f6), var(--primary-600, #2563eb)); border: none; border-radius: var(--radius-lg, 0.5rem); cursor: pointer; }
-    .btn-primary:hover { opacity: 0.95; }
+    /* Buttons use global .btn, .btn-primary classes from styles.css */
     .boards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
     .board-card { display: block; background: var(--bg-primary, #fff); border-radius: var(--radius-lg, 0.5rem); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: box-shadow 0.2s, transform 0.2s; text-decoration: none; color: inherit; }
     .board-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.12); transform: translateY(-2px); }

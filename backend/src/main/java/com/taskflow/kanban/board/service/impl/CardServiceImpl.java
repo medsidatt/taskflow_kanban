@@ -10,6 +10,8 @@ import com.taskflow.kanban.board.repository.CardRepository;
 import com.taskflow.kanban.board.repository.ColumnRepository;
 import com.taskflow.kanban.board.service.ActivityService;
 import com.taskflow.kanban.board.service.CardService;
+import com.taskflow.kanban.notification.NotificationType;
+import com.taskflow.kanban.notification.service.NotificationService;
 import com.taskflow.kanban.security.CustomUserDetails;
 import com.taskflow.kanban.user.entity.User;
 import com.taskflow.kanban.user.repository.UserRepository;
@@ -35,6 +37,7 @@ public class CardServiceImpl implements CardService {
     private final BoardMemberRepository boardMemberRepository;
     private final UserRepository userRepository;
     private final ActivityService activityService;
+    private final NotificationService notificationService;
 
     @Override
     public CardDto createCard(CardCreateDto createDto) {
@@ -175,6 +178,21 @@ public class CardServiceImpl implements CardService {
         
         activityService.logActivity(id, "Card", "UPDATE", 
             "Card '" + updatedCard.getTitle() + "' was updated", getCurrentUserId());
+        
+        // Notify all card members about the update (except the person who made the update)
+        UUID currentUserId = getCurrentUserId();
+        for (CardMember member : updatedCard.getMembers()) {
+            if (!member.getUser().getId().equals(currentUserId)) {
+                notificationService.createNotification(
+                    member.getUser().getId(),
+                    NotificationType.CARD_UPDATE,
+                    "Card updated",
+                    "\"" + updatedCard.getTitle() + "\" was updated",
+                    id,
+                    "Card"
+                );
+            }
+        }
             
         return toDto(updatedCard);
     }
@@ -203,6 +221,19 @@ public class CardServiceImpl implements CardService {
         
         activityService.logActivity(cardId, "Card", "UPDATE", 
             "User '" + user.getUsername() + "' was assigned to card '" + card.getTitle() + "' as " + role, getCurrentUserId());
+        
+        // Send notification to the assigned user (if not assigning themselves)
+        UUID currentUserId = getCurrentUserId();
+        if (!userId.equals(currentUserId)) {
+            notificationService.createNotification(
+                userId,
+                NotificationType.CARD_ASSIGNED,
+                "You've been assigned to a card",
+                "You were assigned to \"" + card.getTitle() + "\"",
+                cardId,
+                "Card"
+            );
+        }
     }
 
     @Override

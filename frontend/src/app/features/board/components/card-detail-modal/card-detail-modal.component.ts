@@ -27,6 +27,7 @@ export class CardDetailModalComponent implements OnInit {
   @Input() columnTitle = '';
   @Input() columns: { id: string; name: string }[] = [];
   @Input() boardId: string | null = null;
+  @Input() canEdit = true;
   @Output() close = new EventEmitter<void>();
   @Output() update = new EventEmitter<Card>();
   @Output() deleted = new EventEmitter<void>();

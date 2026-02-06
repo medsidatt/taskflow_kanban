@@ -159,24 +159,4 @@
   transform: translateX(1.25rem);
 }
 
-/* Button */
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary, #18181b);
-  background: var(--gray-200, #e4e4e7);
-  border: 1px solid var(--border-color, #e5e7eb);
-  border-radius: 0.5rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.btn-secondary:hover {
-  background: var(--gray-300, #d4d4d8);
-  border-color: var(--gray-400, #a1a1aa);
-}
+/* Buttons use global .btn, .btn-secondary classes from styles.css */

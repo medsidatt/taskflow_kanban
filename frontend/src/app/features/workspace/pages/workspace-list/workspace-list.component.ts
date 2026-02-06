@@ -78,8 +78,7 @@ import { CreateWorkspaceModalComponent, CreateWorkspaceData } from '../../compon
     .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--color-warning, #f59e0b); border: 1px solid rgba(245, 158, 11, 0.3); }
     [data-theme="dark"] .badge-primary { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: rgba(59, 130, 246, 0.4); }
     [data-theme="dark"] .badge-warning { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); }
-    .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; font-size: 0.875rem; font-weight: 600; color: #fff; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); border: none; border-radius: 0.5rem; cursor: pointer; transition: opacity 0.2s; }
-    .btn-primary:hover:not(:disabled) { opacity: 0.9; }
+    /* Buttons use global .btn, .btn-primary classes from styles.css */
   `]
 })
 export class WorkspaceListComponent implements OnInit {

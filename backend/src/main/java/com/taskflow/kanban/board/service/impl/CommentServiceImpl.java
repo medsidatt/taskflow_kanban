@@ -3,11 +3,14 @@ package com.taskflow.kanban.board.service.impl;
 import com.taskflow.kanban.board.dto.CommentCreateDto;
 import com.taskflow.kanban.board.dto.CommentDto;
 import com.taskflow.kanban.board.entity.Card;
+import com.taskflow.kanban.board.entity.CardMember;
 import com.taskflow.kanban.board.entity.Comment;
 import com.taskflow.kanban.board.repository.CardRepository;
 import com.taskflow.kanban.board.repository.CommentRepository;
 import com.taskflow.kanban.board.service.ActivityService;
 import com.taskflow.kanban.board.service.CommentService;
+import com.taskflow.kanban.notification.NotificationType;
+import com.taskflow.kanban.notification.service.NotificationService;
 import com.taskflow.kanban.security.CustomUserDetails;
 import com.taskflow.kanban.user.entity.User;
 import com.taskflow.kanban.user.repository.UserRepository;
@@ -30,6 +33,7 @@ public class CommentServiceImpl implements CommentService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final ActivityService activityService;
+    private final NotificationService notificationService;
 
     @Override
     public CommentDto createComment(CommentCreateDto createDto) {
@@ -49,6 +53,20 @@ public class CommentServiceImpl implements CommentService {
 
         activityService.logActivity(card.getId(), "Card", "COMMENT", 
             "User '" + author.getUsername() + "' commented: '" + savedComment.getContent() + "'", author.getId());
+        
+        // Notify all card members about the new comment (except the author)
+        for (CardMember member : card.getMembers()) {
+            if (!member.getUser().getId().equals(author.getId())) {
+                notificationService.createNotification(
+                    member.getUser().getId(),
+                    NotificationType.CARD_COMMENT,
+                    "New comment on card",
+                    author.getUsername() + " commented on \"" + card.getTitle() + "\"",
+                    card.getId(),
+                    "Card"
+                );
+            }
+        }
 
         return toDto(savedComment);
     }

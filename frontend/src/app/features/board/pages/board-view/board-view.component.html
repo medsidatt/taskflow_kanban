@@ -33,10 +33,12 @@
           <div class="board-archived-banner">
             <lucide-icon [name]="icons.Archive" [size]="18" />
             <span>This board is archived</span>
-            <button type="button" class="btn-ghost btn-sm" (click)="restoreBoard()">
-              <lucide-icon [name]="icons.ArchiveRestore" [size]="16" />
-              Restore
-            </button>
+            @if (canEditBoard()) {
+              <button type="button" class="btn-ghost btn-sm" (click)="restoreBoard()">
+                <lucide-icon [name]="icons.ArchiveRestore" [size]="16" />
+                Restore
+              </button>
+            }
           </div>
         } @else {
           <!-- Board Members -->
@@ -62,18 +64,20 @@
             </button>
             @if (boardMenuOpen()) {
               <div class="board-menu-dropdown">
-                <button type="button" class="board-menu-item" (click)="openEditBoard()">
-                  <lucide-icon [name]="icons.Edit2" [size]="16" />
-                  Edit board
-                </button>
-                <button type="button" class="board-menu-item" (click)="archiveBoard()">
-                  <lucide-icon [name]="icons.Archive" [size]="16" />
-                  Archive board
-                </button>
-                <button type="button" class="board-menu-item" (click)="setBoardPrivate(!board()?.isPrivate)">
-                  <lucide-icon [name]="board()?.isPrivate ? icons.Unlock : icons.Lock" [size]="16" />
-                  {{ board()?.isPrivate ? 'Make public' : 'Make private' }}
-                </button>
+                @if (canEditBoard()) {
+                  <button type="button" class="board-menu-item" (click)="openEditBoard()">
+                    <lucide-icon [name]="icons.Edit2" [size]="16" />
+                    Edit board
+                  </button>
+                  <button type="button" class="board-menu-item" (click)="archiveBoard()">
+                    <lucide-icon [name]="icons.Archive" [size]="16" />
+                    Archive board
+                  </button>
+                  <button type="button" class="board-menu-item" (click)="setBoardPrivate(!board()?.isPrivate)">
+                    <lucide-icon [name]="board()?.isPrivate ? icons.Unlock : icons.Lock" [size]="16" />
+                    {{ board()?.isPrivate ? 'Make public' : 'Make private' }}
+                  </button>
+                }
                 <button type="button" class="board-menu-item" (click)="openArchivedModal()">
                   <lucide-icon [name]="icons.ArchiveRestore" [size]="16" />
                   Archived cards
@@ -92,21 +96,21 @@
         cdkDropList
         cdkDropListOrientation="horizontal"
         [cdkDropListData]="columnsActive()"
-        [cdkDropListSortingDisabled]="board()?.archived ?? false"
+        [cdkDropListSortingDisabled]="(board()?.archived ?? false) || isViewer()"
         (cdkDropListDropped)="onColumnDrop($event)">
 
         <!-- Columns -->
         @for (column of columnsActive(); track column.id) {
-          <div class="board-column" cdkDrag [cdkDragDisabled]="board()?.archived ?? false" (click)="closeMenus()">
+          <div class="board-column" cdkDrag [cdkDragDisabled]="(board()?.archived ?? false) || isViewer()" (click)="closeMenus()">
             <div class="column-drag-placeholder" *cdkDragPlaceholder></div>
             <!-- Column Header -->
             <div class="column-header">
-              @if (!board()?.archived) {
+              @if (!board()?.archived && !isViewer()) {
                 <span class="column-drag-handle" cdkDragHandle title="Drag to reorder list">
                   <lucide-icon [name]="icons.GripVertical" [size]="16" />
                 </span>
               }
-              @if (editingColumnId() === column.id) {
+              @if (editingColumnId() === column.id && canManageColumns()) {
                 <input
                   type="text"
                   class="column-title-input"
@@ -118,7 +122,8 @@
               } @else {
                 <h3
                   class="column-title"
-                  (click)="editingColumnId.set(column.id)">
+                  [class.column-title-readonly]="!canManageColumns()"
+                  (click)="canManageColumns() && editingColumnId.set(column.id)">
                   {{ column.name }}
                 </h3>
               }
@@ -127,28 +132,32 @@
 
               <!-- Column Menu -->
               <div class="column-actions">
-                @if (!board()?.archived) {
+                @if (!board()?.archived && canCreateCard()) {
                   <button class="btn-icon-sm" (click)="addingCardToColumn.set(column.id)">
                     <lucide-icon [name]="icons.Plus" [size]="16" />
                   </button>
                 }
-                <div class="column-more-wrap">
-                  <button class="btn-icon-sm" (click)="toggleColumnMenu(column.id, $event)">
-                    <lucide-icon [name]="icons.MoreVertical" [size]="16" />
-                  </button>
-                  @if (columnMenuId() === column.id) {
-                    <div class="column-menu-dropdown">
-                      <button type="button" class="column-menu-item" (click)="archiveColumn(column.id)">
-                        <lucide-icon [name]="icons.Archive" [size]="14" />
-                        Archive list
-                      </button>
-                      <button type="button" class="column-menu-item danger" (click)="deleteColumn(column.id); columnMenuId.set(null)">
-                        <lucide-icon [name]="icons.Trash2" [size]="14" />
-                        Delete list
-                      </button>
-                    </div>
-                  }
-                </div>
+                @if (canManageColumns()) {
+                  <div class="column-more-wrap">
+                    <button class="btn-icon-sm" (click)="toggleColumnMenu(column.id, $event)">
+                      <lucide-icon [name]="icons.MoreVertical" [size]="16" />
+                    </button>
+                    @if (columnMenuId() === column.id) {
+                      <div class="column-menu-dropdown">
+                        <button type="button" class="column-menu-item" (click)="archiveColumn(column.id)">
+                          <lucide-icon [name]="icons.Archive" [size]="14" />
+                          Archive list
+                        </button>
+                        @if (canDeleteColumn()) {
+                          <button type="button" class="column-menu-item danger" (click)="deleteColumn(column.id); columnMenuId.set(null)">
+                            <lucide-icon [name]="icons.Trash2" [size]="14" />
+                            Delete list
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
 
@@ -162,8 +171,8 @@
               (cdkDropListDropped)="onCardDrop($event, column.id)">
 
               @for (card of getCardsForColumn(column.id); track card.id) {
-                <div class="card-item" [class.card-item-achieved]="card.achieved" cdkDrag (click)="openCardDetails(card)">
-                  @if (!board()?.archived) {
+                <div class="card-item" [class.card-item-achieved]="card.achieved" cdkDrag [cdkDragDisabled]="isViewer()" (click)="openCardDetails(card)">
+                  @if (!board()?.archived && canEditCard()) {
                     <button type="button" class="card-item-menu" (click)="toggleCardMenu(card.id, $event)">
                       <lucide-icon [name]="icons.MoreVertical" [size]="14" />
                     </button>
@@ -195,7 +204,7 @@
 
                   <!-- Title row: done toggle + title -->
                   <div class="card-title-row">
-                    @if (!board()?.archived) {
+                    @if (!board()?.archived && canEditCard()) {
                       <button type="button" class="card-done-toggle" (click)="toggleCardAchieved(card, $event)" [title]="(card.achieved) ? 'Mark as not done' : 'Mark as done'">
                         <lucide-icon [name]="(card.achieved) ? icons.CheckCircle : icons.Circle" [size]="18" />
                       </button>
@@ -237,7 +246,7 @@
             </div>
 
             <!-- Add Card Form -->
-            @if (!board()?.archived && addingCardToColumn() === column.id) {
+            @if (!board()?.archived && canCreateCard() && addingCardToColumn() === column.id) {
               <div class="add-card-form">
                 <textarea
                   class="add-card-input"
@@ -263,7 +272,7 @@
                   </button>
                 </div>
               </div>
-            } @else if (!board()?.archived) {
+            } @else if (!board()?.archived && canCreateCard()) {
               <button
                 class="add-card-button"
                 (click)="addingCardToColumn.set(column.id)">
@@ -298,7 +307,7 @@
         }
 
         <!-- Add Column -->
-        @if (!board()?.archived && showAddColumn()) {
+        @if (!board()?.archived && canManageColumns() && showAddColumn()) {
           <div class="board-column add-column-form">
             <input
               type="text"
@@ -324,7 +333,7 @@
               </button>
             </div>
           </div>
-        } @else if (!board()?.archived) {
+        } @else if (!board()?.archived && canManageColumns()) {
           <button class="add-column-button" (click)="showAddColumn.set(true)">
             <lucide-icon [name]="icons.Plus" [size]="20" />
             <span>Add another list</span>
@@ -366,6 +375,7 @@
         [columnTitle]="getColumnName(card.columnId)"
         [columns]="columnsActive()"
         [boardId]="board()?.id ?? null"
+        [canEdit]="canEditCard()"
         (close)="onCardDetailClose()"
         (update)="onCardDetailUpdate($event)"
         (deleted)="onCardDetailDeleted()" />

@@ -55,6 +55,13 @@ export class ShareBoardModalComponent implements OnInit {
     return m?.role ?? null;
   });
 
+  currentUserId = computed(() => this.authService.getCurrentUser()?.id);
+
+  sortedMembers = computed(() => {
+    const roleOrder: Record<BoardRole, number> = { OWNER: 0, ADMIN: 1, MEMBER: 2, VIEWER: 3 };
+    return [...this.members()].sort((a, b) => roleOrder[a.role] - roleOrder[b.role]);
+  });
+
   constructor(
     private boardService: BoardService,
     private userService: UserService,

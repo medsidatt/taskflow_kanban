@@ -120,12 +120,7 @@ import { Board } from '../../../../core/models/board.model';
     .checkbox-text { display: flex; flex-direction: column; gap: 0.25rem; }
     .checkbox-description { font-size: 0.875rem; color: var(--text-secondary, #6b7280); }
     .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
-    .btn { padding: 0.625rem 1.25rem; font-size: 0.875rem; font-weight: 600; border-radius: 0.5rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.15s; }
-    .btn-secondary { background: #fff; color: #18181b; border: 2px solid #e5e7eb; }
-    .btn-secondary:hover { background: #fafafa; }
-    .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
-    .btn-primary:hover:not(:disabled) { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    /* Buttons use global .btn, .btn-primary, .btn-secondary classes from styles.css */
     .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: edit-spin 0.6s linear infinite; }
     @keyframes edit-spin { to { transform: rotate(360deg); } }
   `]
